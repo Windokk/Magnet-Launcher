@@ -1,0 +1,22 @@
+{
+  "name": "magnet-launcher",
+  "version": "1.0.0",
+  "description": "A Custom Minecraft Launcher written in JS with Node and Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Windokk/Magnet-Launcher.git"
+  },
+  "author": "Windokk",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Windokk/Magnet-Launcher/issues"
+  },
+  "homepage": "https://github.com/Windokk/Magnet-Launcher#readme",
+  "devDependencies": {
+    "electron": "^31.0.1"
+  }
+}
