@@ -2,6 +2,7 @@ const { ipcRenderer, app } = require('electron')
 const { shell } = require('electron');
 const path = require('path');
 const magnet_utils = require('./js/utils.js');
+const { version } = require('process');
 
 
 const maxResBtn = document.getElementById('maxResBtn')
@@ -11,11 +12,16 @@ const Account_btn = document.getElementById('Account_btn')
 const Game_btn = document.getElementById('Game_btn')
 const Skin_btn = document.getElementById('Skin_btn')
 const Mods_btn = document.getElementById('Mods_btn')
+const Configs_btn = document.getElementById('Configs_btn')
 const Launcher_btn = document.getElementById('Launcher_btn')
 const About_btn = document.getElementById('About_btn')
 
 const ipc = ipcRenderer
 
+let Available_Vanilla_Configs;
+
+
+showMainLayout();
 
 let receivedDownloadFilesDir = "";
 
@@ -99,9 +105,14 @@ document.getElementById('versiondropdown').addEventListener('click', (event) => 
 
 /// LAYOUT CHANGES ///
 
-function showMainLayout(){
+async function showMainLayout(){
     document.getElementById('mainLayout').style.display = "flex";
     document.getElementById('settingsLayout').style.display = "none";
+
+    await magnet_utils.sleep(500);
+    
+    ipc.send('getInstalledConfigs');
+
 }
 
 function hideMainLayout(){
@@ -126,6 +137,8 @@ Account_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "none";
     document.getElementById('launcherSettingsLayout').style.display = "none";
     document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
 
 })
 
@@ -137,6 +150,8 @@ Game_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "none";
     document.getElementById('launcherSettingsLayout').style.display = "none";
     document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
 })
 
 Skin_btn.addEventListener('click', ()=>{
@@ -147,6 +162,8 @@ Skin_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "none";
     document.getElementById('launcherSettingsLayout').style.display = "none";
     document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
 })
 
 Mods_btn.addEventListener('click', ()=>{
@@ -157,6 +174,24 @@ Mods_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "flex";
     document.getElementById('launcherSettingsLayout').style.display = "none";
     document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
+})
+
+Configs_btn.addEventListener('click', async ()=>{
+    hideMainLayout();
+    document.getElementById('accountSettingsLayout').style.display = "none";
+    document.getElementById('gameSettingsLayout').style.display = "none";
+    document.getElementById('skinSettingsLayout').style.display = "none";
+    document.getElementById('modsSettingsLayout').style.display = "none";
+    document.getElementById('launcherSettingsLayout').style.display = "none";
+    document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "flex";
+    document.getElementById('configInstall').style.display = "none";
+
+    await magnet_utils.sleep(500);
+    
+    ipc.send('getInstalledConfigs');
 })
 
 Launcher_btn.addEventListener('click', ()=>{
@@ -167,6 +202,8 @@ Launcher_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "none";
     document.getElementById('launcherSettingsLayout').style.display = "flex";
     document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
 })
 
 About_btn.addEventListener('click', ()=>{
@@ -177,9 +214,496 @@ About_btn.addEventListener('click', ()=>{
     document.getElementById('modsSettingsLayout').style.display = "none";
     document.getElementById('launcherSettingsLayout').style.display = "none";
     document.getElementById('aboutSettingsLayout').style.display = "flex";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "none";
 })
 
-/// EXT LINK ///
+/// CONFIG SETTINGS ///
+
+document.getElementById('newConfigBtn').addEventListener('click', () => {
+    document.getElementById('accountSettingsLayout').style.display = "none";
+    document.getElementById('gameSettingsLayout').style.display = "none";
+    document.getElementById('skinSettingsLayout').style.display = "none";
+    document.getElementById('modsSettingsLayout').style.display = "none";
+    document.getElementById('launcherSettingsLayout').style.display = "none";
+    document.getElementById('aboutSettingsLayout').style.display = "none";
+    document.getElementById('configsSettingsLayout').style.display = "none";
+    document.getElementById('configInstall').style.display = "flex";
+
+    document.getElementById('createVanilla').addEventListener('click', () =>{
+        
+        document.getElementById('configInstall').innerHTML = `
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Install New Configuration</h1>
+                <h2 style="margin: 5px;">Loader :</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="dropdown">
+                  <button class="dropbtn" id="loaderSelector">Vanilla</button>
+                  <div class="dropdown-content">
+                    <a id="createVanilla">Vanilla</a>
+                    <a id="createForge" style="cursor: not-allowed;">Forge (Not available for now)</a>
+                    <a id="createFabric" style="cursor: not-allowed;">Fabric (Not available for now)</a>
+                  </div>
+                </div>
+                <h2 style="margin: 5px;">Type :</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="dropdown">
+                  <button class="dropbtn" id="typeSelector"><i>Select a type</i></button>
+                  <div class="dropdown-content">
+                    <a id="selectRelease">Release</a>
+                    <a id="selectSnapshot">Snapshot</a>
+                    <a id="selectBeta">Old Beta</a>
+                    <a id="selectAlpha">Old Alpha</a>
+                  </div>
+                </div>`;
+
+        document.getElementById('selectRelease').addEventListener('click', selectRelease);
+        document.getElementById('selectSnapshot').addEventListener('click', selectSnapshot);
+        document.getElementById('selectBeta').addEventListener('click', selectBeta);
+        document.getElementById('selectAlpha').addEventListener('click', selectAlpha);
+        
+    })
+})
+
+ipc.on('sentAvailableConfigs', (event, jsonData)=>{
+    Available_Vanilla_Configs = jsonData;
+})
+
+async function selectRelease(){
+    document.getElementById('typeSelector').textContent = "Release";
+
+    if(!document.getElementById('versionSelector')){
+        versionTitle = document.createElement('h2');
+        versionTitle.style="margin: 5px;";
+        versionTitle.textContent = "Version"
+        document.getElementById('configInstall').appendChild(versionTitle);
+
+        versionTitleLine = document.createElement('div');
+        versionTitleLine.className = "line";
+        versionTitleLine.style="width:95%;";
+        document.getElementById('configInstall').appendChild(versionTitleLine);
+
+        dropdown = document.createElement('div');
+        dropdown.className = "dropdown";
+
+        dropdownBtn = document.createElement('button');
+        dropdownBtn.className = "dropbtn";
+        dropdownBtn.innerHTML = "<i>Select a version</i>";
+        dropdownBtn.setAttribute('id', "versionSelector");
+        dropdown.appendChild(dropdownBtn);
+
+        dropdownContent = document.createElement('div');
+        dropdownContent.className = "dropdown-content";
+        dropdownContent.style = "position:relative;";
+        dropdownContent.setAttribute('id', "dropdownContent");
+
+        ipc.send('getAvailableConfigs');
+
+        await magnet_utils.sleep(500);
+
+        const releaseVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'release')
+            .map(({ id, url }) => ({ id, url }));
+
+        releaseVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `release-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`release-${id}`)});
+            dropdownContent.appendChild(version);
+        })
+
+        dropdown.appendChild(dropdownContent);
+
+        document.getElementById('configInstall').appendChild(dropdown);
+    }
+    else{
+        document.getElementById("dropdownContent").innerHTML = "";
+        const releaseVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'release')
+            .map(({ id, url }) => ({ id, url }));
+
+        releaseVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `release-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`release-${id}`)});
+            document.getElementById("dropdownContent").appendChild(version);
+        })
+    }
+
+    
+}
+
+async function selectSnapshot(){
+    document.getElementById('typeSelector').textContent = "Snapshot";
+
+    if(!document.getElementById('versionSelector')){
+        versionTitle = document.createElement('h2');
+        versionTitle.style="margin: 5px;";
+        versionTitle.textContent = "Version"
+        document.getElementById('configInstall').appendChild(versionTitle);
+
+        versionTitleLine = document.createElement('div');
+        versionTitleLine.className = "line";
+        versionTitleLine.style="width:95%;";
+        document.getElementById('configInstall').appendChild(versionTitleLine);
+
+        dropdown = document.createElement('div');
+        dropdown.className = "dropdown";
+
+        dropdownBtn = document.createElement('button');
+        dropdownBtn.className = "dropbtn";
+        dropdownBtn.innerHTML = "<i>Select a version</i>";
+        dropdownBtn.setAttribute('id', "versionSelector");
+        dropdown.appendChild(dropdownBtn);
+
+        dropdownContent = document.createElement('div');
+        dropdownContent.className = "dropdown-content";
+        dropdownContent.style = "position:relative;";
+        dropdownContent.setAttribute('id', "dropdownContent");
+
+        ipc.send('getAvailableConfigs');
+
+        await magnet_utils.sleep(500);
+
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'snapshot')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `snapshot-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`snapshot-${id}`)});
+            dropdownContent.appendChild(version);
+        })
+
+        dropdown.appendChild(dropdownContent);
+
+        document.getElementById('configInstall').appendChild(dropdown);
+    }
+    else{
+        document.getElementById("dropdownContent").innerHTML = "";
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'snapshot')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `snapshot-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`snapshot-${id}`)});
+            document.getElementById("dropdownContent").appendChild(version);
+        })
+    }
+}
+
+async function selectBeta(){
+    document.getElementById('typeSelector').textContent = "Old Beta";
+
+    if(!document.getElementById('versionSelector')){
+        versionTitle = document.createElement('h2');
+        versionTitle.style="margin: 5px;";
+        versionTitle.textContent = "Version"
+        document.getElementById('configInstall').appendChild(versionTitle);
+
+        versionTitleLine = document.createElement('div');
+        versionTitleLine.className = "line";
+        versionTitleLine.style="width:95%;";
+        document.getElementById('configInstall').appendChild(versionTitleLine);
+
+        dropdown = document.createElement('div');
+        dropdown.className = "dropdown";
+
+        dropdownBtn = document.createElement('button');
+        dropdownBtn.className = "dropbtn";
+        dropdownBtn.innerHTML = "<i>Select a version</i>";
+        dropdownBtn.setAttribute('id', "versionSelector");
+        dropdown.appendChild(dropdownBtn);
+
+        dropdownContent = document.createElement('div');
+        dropdownContent.className = "dropdown-content";
+        dropdownContent.style = "position:relative;";
+        dropdownContent.setAttribute('id', "dropdownContent");
+
+        ipc.send('getAvailableConfigs');
+
+        await magnet_utils.sleep(500);
+
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'old_beta')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `old_beta-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`old_beta-${id}`)});
+            dropdownContent.appendChild(version);
+        })
+
+        dropdown.appendChild(dropdownContent);
+
+        document.getElementById('configInstall').appendChild(dropdown);
+    }
+    else{
+        document.getElementById("dropdownContent").innerHTML = "";
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'old_beta')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `old_beta-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`old_beta-${id}`)});
+            document.getElementById("dropdownContent").appendChild(version);
+        })
+    }
+}
+
+async function selectAlpha(){
+    document.getElementById('typeSelector').textContent = "Old Alpha";
+
+    if(!document.getElementById('versionSelector')){
+        versionTitle = document.createElement('h2');
+        versionTitle.style="margin: 5px;";
+        versionTitle.textContent = "Version"
+        document.getElementById('configInstall').appendChild(versionTitle);
+
+        versionTitleLine = document.createElement('div');
+        versionTitleLine.className = "line";
+        versionTitleLine.style="width:95%;";
+        document.getElementById('configInstall').appendChild(versionTitleLine);
+
+        dropdown = document.createElement('div');
+        dropdown.className = "dropdown";
+
+        dropdownBtn = document.createElement('button');
+        dropdownBtn.className = "dropbtn";
+        dropdownBtn.innerHTML = "<i>Select a version</i>";
+        dropdownBtn.setAttribute('id', "versionSelector");
+        dropdown.appendChild(dropdownBtn);
+
+        dropdownContent = document.createElement('div');
+        dropdownContent.className = "dropdown-content";
+        dropdownContent.style = "position:relative;";
+        dropdownContent.setAttribute('id', "dropdownContent");
+
+        ipc.send('getAvailableConfigs');
+
+        await magnet_utils.sleep(500);
+
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'old_alpha')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `old_alpha-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`old_alpha-${id}`)});
+            dropdownContent.appendChild(version);
+        })
+
+        dropdown.appendChild(dropdownContent);
+
+        document.getElementById('configInstall').appendChild(dropdown);
+    }
+    else{
+        document.getElementById("dropdownContent").innerHTML = "";
+        const snapshotVersions = Available_Vanilla_Configs.versions
+            .filter(version => version.type === 'old_alpha')
+            .map(({ id, url }) => ({ id, url }));
+
+        snapshotVersions.forEach(({ id, url }) =>{
+            const version = document.createElement('a');
+            version.textContent = `old_alpha-${id}`;
+            version.addEventListener('click', () => {selectVanillaVersion(`old_alpha-${id}`)});
+            document.getElementById("dropdownContent").appendChild(version);
+        })
+    }
+}
+
+function selectVanillaVersion(fullVersion){
+    document.getElementById('versionSelector').textContent = fullVersion;
+
+    if(!document.getElementById('installBtn')){
+        InstallBtn = document.createElement('button');
+        InstallBtn.setAttribute("id", "installBtn");
+        InstallBtn.className = "selectConfigButton";
+        InstallBtn.textContent = "Install";
+        InstallBtn.addEventListener('click', ()=>getVanillaInfosFromVersion(document.getElementById('versionSelector').textContent));
+        document.getElementById('configInstall').appendChild(InstallBtn);
+    }
+    else{
+        document.getElementById('installBtn').addEventListener('click', ()=>getVanillaInfosFromVersion(document.getElementById('versionSelector').textContent));
+    }
+}
+
+function getVanillaInfosFromVersion(fullVersion){
+    let parts = fullVersion.split('-');
+    let type_ = parts[0];
+    let version_ = parts[1];
+
+    if (type_=="release"){
+        const version = Available_Vanilla_Configs.versions
+            .filter(version => version.type === type_)
+            .filter(version => version.id === version_)
+            .map(({ id, url }) => ({ id, url }));
+        ipc.send('installNewVersion', "vanilla", "release", version[0].id, version[0].url);
+    }
+    if (type_=="snapshot"){
+        const version = Available_Vanilla_Configs.versions
+            .filter(version => version.type === type_)
+            .filter(version => version.id === version_)
+            .map(({ id, url }) => ({ id, url }));
+        ipc.send('installNewVersion', "vanilla", "snapshot", version[0].id, version[0].url);
+    }
+    if (type_=="old_beta"){
+        const version = Available_Vanilla_Configs.versions
+            .filter(version => version.type === type_)
+            .filter(version => version.id === version_)
+            .map(({ id, url }) => ({ id, url }));
+        ipc.send('installNewVersion', "vanilla", "old_beta", version[0].id, version[0].url);
+    }
+    if (type_=="old_alpha"){
+        const version = Available_Vanilla_Configs.versions
+            .filter(version => version.type === type_)
+            .filter(version => version.id === version_)
+            .map(({ id, url }) => ({ id, url }));
+        ipc.send('installNewVersion', "vanilla", "old_alpha", version[0].id, version[0].url);
+    }
+}
+
+ipc.on('sentInstalledConfigs', (event, jsonData) =>{
+
+    if(document.getElementById('mainLayout').style.display == "none"){
+        const containerDiv = document.getElementById('installedConfigsContainer');
+        containerDiv.innerHTML = '';
+
+        configArray = jsonData.configs;
+
+        configArray.forEach((item, index) => {
+            // Create a new div element
+            const newDiv = document.createElement('div');
+            newDiv.className = "installedConfig";
+
+            // Check the loader type
+            if (item.loader === "vanilla") {
+                // Create and style the icon div
+                const icon = document.createElement('div');
+                icon.className = "vanilla_icon";
+                icon.style.width = "40px";
+                icon.style.height = "40px";
+                icon.style.marginRight = "30%";
+                // Append icon to newDiv
+                newDiv.appendChild(icon);
+            }
+
+            const version_text = document.createElement('p');
+            if(item.loader === "vanilla"){
+                if(item.type == "release"){
+                    version_text.textContent = `release-${item.version}`;
+                }
+                if(item.type == "snapshot"){
+                    version_text.textContent = `snapshot-${item.version}`;
+                }
+                if(item.type == "old_beta"){
+                    version_text.textContent = `old_beta-${item.version}`;
+                }
+                if(item.type == "old_alpha"){
+                    version_text.textContent = `old_alpha-${item.version}`;
+                }
+            }
+            else{
+                version_text.textContent = item.version;
+            }
+            version_text.style.width="100px";
+
+            const selectBtn = document.createElement('div');
+            selectBtn.className = "selectConfigButton";
+
+            selectBtn.addEventListener('click', () =>{
+                selectConfig(index);
+            })
+
+            const selectBtnText = document.createElement('p');
+            selectBtnText.textContent = "Select";
+            selectBtn.appendChild(selectBtnText);
+
+            newDiv.setAttribute("index", index);
+
+            // Set the text content of newDiv to item.version
+            newDiv.appendChild(version_text);
+
+            newDiv.appendChild(selectBtn);
+            
+            
+    
+            // Append the new div to the container div
+            containerDiv.appendChild(newDiv);
+        });
+    }
+    else{
+        const containerDiv = document.getElementById('versiondropdown');
+        containerDiv.innerHTML = '';
+
+        configArray = jsonData.configs;
+        selectedConfigIndex = jsonData.current;
+
+        configArray.forEach((item, index) => {
+            const configBtn = document.createElement('button');
+            configBtn.className = 'versionbtn';
+
+            configBtn.setAttribute('index', index);
+
+            // Check the loader type
+            if (item.loader === "vanilla") {
+                // Create and style the icon div
+                const icon = document.createElement('div');
+                icon.className = "vanilla_icon";
+                configBtn.appendChild(icon);
+            }
+
+            const versionText = document.createElement('a');
+            versionText.textContent = item.version;
+            configBtn.appendChild(versionText);
+            
+            configBtn.addEventListener('click', ()=>{
+                selectConfig(index);
+            })
+
+            containerDiv.appendChild(configBtn);
+
+            if(index != jsonData.configs.length-1){
+                //We add the separation line
+                const line = document.createElement('div');
+                line.className = "line";
+                containerDiv.appendChild(line);
+            }
+
+        })
+
+        setSelectedConfigButton(configArray, selectedConfigIndex);
+    }
+})
+
+function selectConfig(index){
+    ipc.send('setSelectedConfig', index);
+}
+
+function setSelectedConfigButton(configs, current){
+    if(document.getElementById('mainLayout').style.display == "flex"){
+        if(current >= 0){
+            if (configs[current].loader === "vanilla"){
+                document.getElementById('currentVersionLoaderIcon').className = 'vanilla_icon';
+            }
+            document.getElementById('currentVersionText').textContent = configs[current].version;
+        }
+        else{
+            document.getElementById('currentVersionLoaderIcon').className = '';
+            document.getElementById('currentVersionText').textContent = '';
+        }
+    }
+}
+
+
+
+/// EXT LINKS ///
 
 document.getElementById('electron_link').addEventListener('click', () => {
     ipc.send("electron_link");
@@ -214,7 +738,7 @@ autoUpdate.addEventListener('change', () => {
 for (let ele of document.getElementsByClassName('settingsFileSelButton')) {
     if (ele.getAttribute('select-type') === "directories") {
         ele.onclick = async e => {
-            ipc.send('selectDirectory');
+            ipc.send('selectDownloadsDirectory');
         }
     }
 }
@@ -259,7 +783,7 @@ document.getElementById('background-custom').addEventListener('click', ()=>{
 ipc.on('selected_bg', async (event, customBG) => {
     document.getElementById('mainAppBG').style.backgroundImage = "none";
     await magnet_utils.sleep(500);
-    if(!(customBG == "./images/background7.jpg")){
+    if(!(customBG == "../images/background7.jpg")){
         document.getElementById('mainAppBG').style.backgroundImage = `url(${customBG})`;
     }
     

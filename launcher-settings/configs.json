@@ -1,0 +1,47 @@
+{
+  "current": 0,
+  "configs": [
+    {
+      "loader": "vanilla",
+      "type": "release",
+      "version": "1.21",
+      "url": "https://piston-meta.mojang.com/v1/packages/177e49d3233cb6eac42f0495c0a48e719870c2ae/1.21.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "release",
+      "version": "1.20.6",
+      "url": "https://piston-meta.mojang.com/v1/packages/c5552f3d3493b2a2a31db441abc337faf7d1e139/1.20.6.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "release",
+      "version": "1.18.2",
+      "url": "https://piston-meta.mojang.com/v1/packages/334b33fcba3c9be4b7514624c965256535bd7eba/1.18.2.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "release",
+      "version": "1.1",
+      "url": "https://piston-meta.mojang.com/v1/packages/c0cb9368dbdbb1e8dbcb9363a28d8da74cf6fc5e/1.1.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "snapshot",
+      "version": "24w03a",
+      "url": "https://piston-meta.mojang.com/v1/packages/573f1eab81508fad5533afac72844d7af5cb1eac/24w03a.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "old_alpha",
+      "version": "a1.2.4_01",
+      "url": "https://piston-meta.mojang.com/v1/packages/64d6a749cb24ddd8a27546f9555ac7c2853c5943/a1.2.4_01.json"
+    },
+    {
+      "loader": "vanilla",
+      "type": "old_beta",
+      "version": "b1.1_01",
+      "url": "https://piston-meta.mojang.com/v1/packages/1bab185d888a549a3fcb4e528557caa3e7884290/b1.1_01.json"
+    }
+  ]
+}

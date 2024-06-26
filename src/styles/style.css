@@ -58,7 +58,7 @@ h3{
     overflow: hidden;
     position: fixed;
     -webkit-box-sizing: border-box;
-    background-image: url('../images/background1.jpg');
+    background-image: none;
     background-repeat:no-repeat;
     background-size: cover;
     box-shadow: 0 0 200px rgb(0, 0, 0) inset;
@@ -439,8 +439,11 @@ h3{
 .accountSettings{
     display: none;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    width: calc(100% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    padding-left: 30px;
+    overflow-y: auto;
 }
 
 /* GAME */
@@ -448,8 +451,11 @@ h3{
 .gameSettings{
     display: none;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    width: calc(100% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    padding-left: 30px;
+    overflow-y: auto;
 }
 
 /* SKIN */
@@ -457,8 +463,11 @@ h3{
 .skinSettings{
     display: none;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    width: calc(100% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    padding-left: 30px;
+    overflow-y: auto;
 }
 
 /* MODS */
@@ -466,18 +475,182 @@ h3{
 .modsSettings{
     display: none;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    width: calc(100% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    padding-left: 30px;
+    overflow-y: auto;
 }
+
+/* CONFIGS */
+
+.configsSettings{
+    display: none;
+    flex-direction: column;
+    width: calc(100% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px;
+    padding-left: 30px;
+    overflow-y: auto;
+}
+
+.configsSettings > .newConfigBtn{
+    margin-top: 2%;
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+    display: flex;
+    width: 130px;
+    height: 50px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 30px;
+    box-sizing: border-box;
+    margin-bottom: 2%;
+    transition: 0.2s;
+    transform: scale(1);
+}
+
+.configsSettings > .newConfigBtn:hover{
+    transition: 0.2s;
+    transform: scale(1.1);
+}
+
+.configsSettings > .newConfigBtn:active{
+    transition: 0.2s;
+    box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
+    -webkit-box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
+}
+
+.configsSettings > .installedConfigsContainer{
+    height: 100%;
+    width:95%;
+    margin-top:20px;
+    line-height: 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.configsSettings > .installedConfigsContainer > .installedConfig{
+    background-color: #2d323b;
+    color: #e4e4e4;
+    border: transparent;
+    height: 15%;
+    line-height: 70px;
+    margin: 5px;
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.selectConfigButton{
+    background-color: transparent;
+    width: 150px;
+    height:40px;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 120px;
+    transition: 0.3s;
+}
+
+.selectConfigButton:hover{
+    transition: 0.3s;
+    background-color:#0d522a;
+}
+
+.selectConfigButton > p{
+    background-color: transparent;
+    border: transparent;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.configInstall{
+    display: none;
+    flex-direction: column;
+    width: calc(100% - 40px);
+    height: calc(100% - 30px);
+    padding: 10px;
+    padding-left: 30px;
+    padding-bottom: 20px;
+    overflow-y: auto;
+}
+
+.configInstall > .dropdown > .dropbtn {
+    background-color: #6b6b6b;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.4s;
+}
+  
+.configInstall > .dropdown {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+    width:fit-content;
+    transition: 0.4s;
+    margin-bottom: 20px;
+}
+  
+.configInstall > .dropdown > .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #56585c;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    transition: 0.4s;
+    max-height: 200px;
+    margin-bottom: 20px;
+    overflow-y: auto;
+}
+  
+.configInstall > .dropdown > .dropdown-content a {
+    color: rgb(201, 201, 201);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: 0.4s;
+}
+  
+.configInstall > .dropdown > .dropdown-content a:hover {background-color: #252525}
+  
+.configInstall > .dropdown:hover .dropdown-content {
+    transition: 0.4s;
+    display: block;
+}
+  
+.configInstall > .dropdown:hover .dropbtn {
+    transition: 0.4s;
+    background-color: #555555;
+}
+
 
 /* LAUNCHER */
 
 .launcherSettings{
     display: none;
     flex-direction: column;
-    width: calc(100% - 20px);
+    width: calc(100% - 40px);
     height: calc(100% - 20px);
     padding: 10px;
+    padding-left: 30px;
     overflow-y: auto;
 }
 
@@ -585,13 +758,12 @@ input:checked + .slider:before {
 
 .launcherSettings > .updateLauncherBtn {
     margin-top: 2%;
-    border-radius: 8px;
-    border: 2px solid #949AA7;
+    border: 1px solid #ffffff;
     background-color: transparent;
-    color: #949AA7;
+    color: #ffffff;
     display: flex;
-    width: 16%;
-    height: 10%;
+    width: 100px;
+    height: 50px;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -599,7 +771,6 @@ input:checked + .slider:before {
     padding: 30px;
     box-sizing: border-box;
     margin-bottom: 2%;
-    margin-left: 2%;
     transition: 0.2s;
     transform: scale(1);
 }
@@ -611,14 +782,13 @@ input:checked + .slider:before {
 
 .launcherSettings > .updateLauncherBtn:active{
     transition: 0.2s;
-    border: 2px solid white;
     box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
     -webkit-box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
 }
 
 .launcherSettings > .updateLauncherBtn:disabled {
     cursor: not-allowed;
-    border: 2px solid #cccccc;
+    border: 1px solid #cccccc;
     color: #cccccc;
 }
 
@@ -672,19 +842,20 @@ input:checked + .slider:before {
 .aboutSettings{
     display: none;
     flex-direction: column;
-    width: calc(100% - 20px);
+    width: calc(100% - 40px);
     height: calc(100% - 20px);
     padding: 10px;
+    padding-left: 30px;
     overflow-y: auto;
     
 }
 
 .aboutSettings > .reportBugBtn {
     margin-top: 2%;
-    border-radius: 8px;
-    border: 2px solid #949AA7;
+    font-weight: 200;
+    border: 1px solid #ffffff;
     background-color: transparent;
-    color: #949AA7;
+    color: #ffffff;
     display: flex;
     width: 100px;
     height: 50px;
@@ -695,10 +866,19 @@ input:checked + .slider:before {
     padding: 10px;
     box-sizing: border-box;
     margin-bottom: 2%;
+    transition: 0.2s;
+    transform: scale(1);
 }
 
 .aboutSettings > .reportBugBtn:hover{
-    border: 2px solid white;
+    transition: 0.2s;
+    transform: scale(1.1);
+}
+
+.aboutSettings > .reportBugBtn:active{
+    transition: 0.2s;
+    box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
+    -webkit-box-shadow: 1px -1px 14px 0px rgba(255,255,255,0.75);
 }
 
 .aboutSettings > #electron_link{

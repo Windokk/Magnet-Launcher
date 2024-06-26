@@ -15,6 +15,7 @@
           <button id="Game_btn">Game</button>
           <button id="Skin_btn">Skin</button>
           <button id="Mods_btn">Mods</button>
+          <button id="Configs_btn">Configs</button>
           <div style="height:30px;"></div>
           <button id="Launcher_btn">Launcher</button>
           <button id="About_btn">About</button>
@@ -42,24 +43,8 @@
             <div class="mainLayoutMiddle"></div>
             <div class="mainLayoutBottom">
               <div class="bottomLeftPart">
-                <div class="dropdown-content" id="versiondropdown">
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.20.6</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.19.2</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.16.5</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.18.2</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.20.6</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.19.2</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.16.5</a></button>
-                  <div class="line"></div>
-                  <button class="versionbtn"><div class="vanilla_icon"></div><a>1.18.2</a></button>
-                </div>
-                <button class="dropdownBtn" id="versionbtn"><div class="vanilla_icon"></div>1.20.6<img src="./icons/^.svg" alt="up_arrow_icon" width=20vw style="margin-left:10px"></button>
+                <div class="dropdown-content" id="versiondropdown"></div>
+                <button class="dropdownBtn" id="versionbtn"><div id="currentVersionLoaderIcon"></div><p id="currentVersionText"></p><img src="./icons/^.svg" alt="up_arrow_icon" width=20vw style="margin-left:10px"></button>
               </div> 
               <div style="height:50%;" class="line-vertical"></div>
               <div class="bottomMiddlePart">
@@ -77,11 +62,34 @@
               <div class="gameSettings" id="gameSettingsLayout"></div>
               <div class="skinSettings" id="skinSettingsLayout"></div>
               <div class="modsSettings" id="modsSettingsLayout"></div>
+              <div class="configInstall" id="configInstall">
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Install New Configuration</h1>
+                <h2 style="margin: 5px;">Loader :</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="dropdown">
+                  <button class="dropbtn" id="loaderSelector"><i>Select a loader</i></button>
+                  <div class="dropdown-content">
+                    <a id="createVanilla">Vanilla</a>
+                    <a id="createForge" style="cursor: not-allowed;">Forge (Not available for now)</a>
+                    <a id="createFabric" style="cursor: not-allowed;">Fabric (Not available for now)</a>
+                  </div>
+                </div>
+                
+
+              </div>
+              <div class="configsSettings" id="configsSettingsLayout">
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Configurations Settings</h1>
+                <button class="newConfigBtn" id="newConfigBtn">New Config</button>
+                <h2 style="margin: 5px;">Installed Configs</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="installedConfigsContainer" id="installedConfigsContainer">
+                </div>
+              </div>
               <div class="launcherSettings" id="launcherSettingsLayout">
                 <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Launcher Settings</h1>
                 <h2 style="margin: 5px;">Updates</h2>
                 <div class="line" style="width:95%;"></div>
-                <div style="display: flex; flex-direction:row; align-items: center;">
+                <div style="display: flex; flex-direction: row; align-items: center;">
                   <p style="margin-right: 2%;">Allow auto updates</p>
                   <label class="switch">
                     <input type="checkbox" id="autoUpdate">
@@ -105,13 +113,13 @@
                 <div style="display: flex; flex-direction: row; align-items: center;">
                   <p>Background : </p>
                   <div class="bg-images-flex-container">
-                    <img id="background1" src="./images/background1.jpg"/>
-                    <img id="background2" src="./images/background2.jpg"/>
-                    <img id="background3" src="./images/background3.jpg"/>
-                    <img id="background4" src="./images/background4.jpg"/>
-                    <img id="background5" src="./images/background5.jpg"/>
-                    <img id="background6" src="./images/background6.jpg"/>
-                    <img id="background7" src="./images/background7.jpg"/>
+                    <img id="background1" src="../launcher-settings/background1.jpg"/>
+                    <img id="background2" src="../launcher-settings/background2.jpg"/>
+                    <img id="background3" src="../launcher-settings/background3.jpg"/>
+                    <img id="background4" src="../launcher-settings/background4.jpg"/>
+                    <img id="background5" src="../launcher-settings/background5.jpg"/>
+                    <img id="background6" src="../launcher-settings/background6.jpg"/>
+                    <img id="background7" src="../launcher-settings/background7.jpg"/>
                     <div id="background-custom" class="add-button"><img style="margin: auto;" src="./icons/plus-solid.svg" alt="plus_icon" width="20px"/></div>
                   </div>
                 </div>

@@ -1,12 +1,29 @@
 {
-  "name": "magnet-launcher",
+  "name": "MagnetLauncher",
+  "productName": "Magnet Launcher",
   "version": "0.0.1",
   "description": "A Custom Minecraft Launcher written in JS with Node and Electron",
   "main": "main.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "net.windokk.magnet-launcher",
+    "win": {
+      "target": "nsis",
+      "icon":"build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon":"build/icon.ico",
+      "uninstallerIcon":"build/icon.ico",
+      "artifactName": "${productName} Setup ${version}.exe",
+      "license": "build/gpl-3.0.rtf",
+      "uninstallDisplayName": "${productName}",
+      "runAfterFinish":true
+    }
   },
   "repository": {
     "type": "git",
@@ -19,15 +36,9 @@
   },
   "homepage": "https://github.com/Windokk/Magnet-Launcher#readme",
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
-    "@electron-forge/plugin-fuses": "^7.4.0",
-    "@electron/fuses": "^1.8.0",
-    "electron": "^31.0.2"
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "electron-squirrel-startup": "^1.0.1"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1"
