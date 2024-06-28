@@ -18,10 +18,12 @@ A Minecraft Java Launcher in JS built with Electron
 <a href="https://github.com/Windokk/Magnet-Launcher/issues/new">Report a bug</a>&nbsp;&nbsp;
 <a href="https://github.com/Windokk/Magnet-Launcher/issues/new">Suggest an enhancement</a>&nbsp;&nbsp;
 <br>
+</div>
 
 > [!WARNING]  
 > The Launcher is currently in a pre-alpha state. A lot of features are missing and you may exepct a lot of bugs.
 
+<div align="center">
 ## Screenshots
 
 <img src="./github/image.png" width="1030"/>
