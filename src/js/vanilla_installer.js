@@ -28,23 +28,15 @@ function extractNativeLib(){
 
 
 
-async function installVersion(index, url, files_dl_dir) {
-    versionData = fetchVanillaDataFromURL(index, url, files_dl_dir);
-    
 
-    /// FIRST WE DL THE ASSETS
-    let data = await fetchJson(versionData.assetsJsonURL);
-    Object.keys(data.objects).forEach(key => {
-      const hashValue = jsonContent.objects[key].hash;
-      console.log(hashValue);
-      downloadAsset(hashValue, files_dl_dir);
-    });
-}
 
 function fetchJson(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (response) => {
       let data = '';
+
+      console.log(`Status Code: ${response.statusCode}`);
+      console.log(`Headers: ${JSON.stringify(response.headers)}`);
 
       // Handle response chunk
       response.on('data', (chunk) => {
@@ -57,12 +49,12 @@ function fetchJson(url) {
           const json = JSON.parse(data);
           resolve(json);
         } catch (error) {
-          reject(`Error parsing JSON: ${error.message}`);
+          reject(new Error(`Error parsing JSON: ${error.message}`));
         }
       });
 
     }).on('error', (error) => {
-      reject(`Request error: ${error.message}`);
+      reject(new Error(`Request error: ${error.message || JSON.stringify(error)}`));
     });
   });
 }
@@ -98,12 +90,13 @@ function getWindowsSimpleDownloadsPaths(simpleDownloads){
   
 async function fetchVanillaDataFromURL(index, url, files_dl_dir){
 
+    if(684 >= index && index >= 587){
 
 
-    if(index >= 587){
-
-      //If the version is 21w38a or later (has xuid, clientId)
+      //If the version is in between  21w38a and 23w17a (has xuid, clientId) (has osname, osversion as jvm attributes)
       data = await fetchJson(url);
+
+      classpath = ``;
       
       asset_index = data.assetIndex.id;
 
@@ -145,22 +138,17 @@ async function fetchVanillaDataFromURL(index, url, files_dl_dir){
           classpath+= path.join(path.join(files_dl_dir, "configs", data.id, "libraries"), item);
           classpath+= "; "
         })
-
-
-      }else if(os.platform() === 'darwin'){
+      }
+      else if(os.platform() === 'darwin'){
         //Running on macOS
-        
-      }else if(os.platform() === 'linux'){
-
-      }else{
+      }
+      else if(os.platform() === 'linux'){}
+      else{
         // Magnet is not available on an os other than win32, macos or linux
         return;
       }
-
+      result = {"asset_index":asset_index,"assetsJsonURL":assetsJsonURL, "heap_dump_path" :heap_dump_path, "os_name":os_name, "os_version":os_version, "log_config_file":log_config_file, "java_options":java_options, "classpath":classpath};
       
-
-      result = {"data":data, "asset_index":asset_index,"assetsJsonURL":assetsJsonURL, "heap_dump_path" :heap_dump_path, "os_name":os_name, "os_version":os_version, "log_config_file":log_config_file, "java_options":java_options, "classpath":classpath};
-
       return result;
 
     }
@@ -168,6 +156,21 @@ async function fetchVanillaDataFromURL(index, url, files_dl_dir){
       // TODO : older version
     }
 }
+
+async function installVersion(index, url, files_dl_dir) {
+  const versionData = await fetchVanillaDataFromURL(index, url, files_dl_dir);
+  /// FIRST WE DL THE ASSETS
+  try {
+    const data = await fetchJson(versionData.assetsJsonURL);
+    Object.keys(data.objects).forEach(key => {
+      const hashValue = data.objects[key].hash;
+      downloadAsset(hashValue, files_dl_dir);
+    });
+  } catch (error) {
+    console.error(`Failed to process JSON: ${error.message || JSON.stringify(error)}`);
+  }
+}
+
 
 
 module.exports = { installVersion , fetchVanillaData, fetchVanillaDataFromURL};

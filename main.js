@@ -138,7 +138,7 @@ function createWindow () {
       fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'),jsonStringified);
       launcherContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
       launcherData = JSON.parse(launcherContent);
-      installVersion(jsonData.configs.length-1,url, launcherData.downloadsDir);
+      await installVersion(new_index, url, launcherData.downloadsDir);
     }
     else{
       dialog.showMessageBoxSync(win, {message: "The same exact installation already exists !", type:"warning"});
@@ -438,7 +438,7 @@ function play(JVM_ARGS){
 
   JAVA_EXEC = launcherjsonData.javawPath;
   HEAP_DUMP_PATH = versionFilejsonData.heap_dump_path;
-  OS_NAME = versionFilejsonData.os_name;
+  OS_NAME = ///versionFilejsonData.os_name;///
   OS_VERSION = versionFilejsonData.os_version;
   JAVA_OPTIONS = versionFilejsonData.java_options;
   CLASSPATH =  versionFilejsonData.classpath;
