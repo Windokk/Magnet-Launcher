@@ -7,6 +7,7 @@
     <script defer src="js/app_func.js"></script>
   </head>
   <body>
+    
     <div class="mainApp" id="mainAppBG">
       <div class="contentArea">
         <div id="sidebar" class="leftMenu">
@@ -48,7 +49,9 @@
               </div> 
               <div style="height:50%;" class="line-vertical"></div>
               <div class="bottomMiddlePart">
-                <img src="./icons/play.png" alt="play_icon" width="50%" class="playButton" id="playButton">
+                <button class="playButton" id="playButton">
+                  <img src="./icons/play.png" alt="play_icon" width="50%">
+              </button>
               </div>
               <div style="height:50%;" class="line-vertical"></div>
               <div class="bottomRightPart">
@@ -59,7 +62,37 @@
           <div class="settingsLayout" id="settingsLayout">
               <button class="closeSettingsBtn" id="closeSettingsBtn"><img src="./icons/close.svg" width="20px"/></button>
               <div class="accountSettings" id="accountSettingsLayout"></div>
-              <div class="gameSettings" id="gameSettingsLayout"></div>
+              <div class="gameSettings" id="gameSettingsLayout">
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Minecraft Java Settings</h1>
+                <h2 style="margin: 5px;">Window</h2>
+                <div class="line" style="width:95%;"></div>
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                  <p style="margin-right: 2%;">Fullscreen</p>
+                  <label class="switch">
+                    <input type="checkbox" id="fullscreen">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                  <p style="margin-right: 2%;">Window Dimension</p>
+                  <input type="number" class="number_input" id="resX" placeholder="X" required="" />
+                  <input type="number" class="number_input" style="margin-left: 2%;" id="resY" placeholder="Y" required="" />
+                </div>
+                <h2 style="margin: 5px;">Java</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="FileSelActions" style="margin-top: 20px; margin-left: 20px;">
+                  <div class="FileSelIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" width="22px" height="22px"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M28.1875,0c2.75,6.36328 -9.85937,10.29297 -11.03125,15.59375c-1.07422,4.87109 7.49219,10.53125 7.5,10.53125c-1.30078,-2.01562 -2.25781,-3.67578 -3.5625,-6.8125c-2.20703,-5.30469 13.44141,-10.10547 7.09375,-19.3125zM36.5625,8.8125c0,0 -11.0625,0.71094 -11.625,7.78125c-0.25,3.14844 2.91016,4.80469 3,7.09375c0.07422,1.87109 -1.875,3.4375 -1.875,3.4375c0,0 3.54688,-0.67578 4.65625,-3.53125c1.23047,-3.16797 -2.39844,-5.30859 -2.03125,-7.84375c0.35156,-2.42578 7.875,-6.9375 7.875,-6.9375zM19.1875,25.15625c0,0 -10.125,-0.14453 -10.125,2.71875c0,2.99219 13.25391,3.21484 22.71875,1.375c0,0 2.51563,-1.73047 3.1875,-2.375c-6.20312,1.26563 -20.34375,1.40625 -20.34375,0.3125c0,-1.00781 4.5625,-2.03125 4.5625,-2.03125zM38.65625,25.15625c-0.99219,0.07813 -2.0625,0.46094 -3.03125,1.15625c2.28125,-0.49219 4.21875,0.92188 4.21875,2.53125c0,3.625 -5.25,7.03125 -5.25,7.03125c0,0 8.125,-0.92187 8.125,-6.875c0,-2.70312 -1.87891,-4.01562 -4.0625,-3.84375zM16.75,30.71875c-1.55469,0 -3.875,1.21875 -3.875,2.375c0,2.32422 11.6875,4.11328 20.34375,0.71875l-3,-1.84375c-5.86719,1.87891 -16.67187,1.26563 -13.46875,-1.25zM18.1875,35.9375c-2.12891,0 -3.53125,1.28516 -3.53125,2.25c0,2.98438 12.71484,3.28516 17.75,0.25l-3.1875,-2.03125c-3.76172,1.58984 -13.20312,1.83203 -11.03125,-0.46875zM11.09375,38.625c-3.46875,-0.07031 -5.71875,1.48828 -5.71875,2.78125c0,6.875 35.5,6.55859 35.5,-0.46875c0,-1.16797 -1.34766,-1.73437 -1.84375,-2c2.90234,6.71875 -29.0625,6.18359 -29.0625,2.21875c0,-0.90234 2.35156,-1.76562 4.53125,-1.34375l-1.84375,-1.0625c-0.54297,-0.08203 -1.06641,-0.11328 -1.5625,-0.125zM44.625,43.25c-5.39844,5.11719 -19.07812,6.97266 -32.84375,3.8125c13.76172,5.63281 32.77734,2.47266 32.84375,-3.8125z"></path></g></g></svg>
+                  </div>
+                  <input class="FileSelVal" id="java_path" type="text" value="none" disabled/>
+                  <button class="FileSelButton" select-type="java">Select javaw.exe</button>
+              </div>
+              <p style="margin-top: 4px; margin-left: 5px; margin-bottom:10px;">(Path should end with : bin/javaw.exe)</p>
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                  <p style="margin-right: 2%;">JVM Arguments</p>
+                  <input type="text" class="text_input" id="JVMArgs" value="-Xmx2G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" placeholder="Enter JVM Additional Arguments" required="" />
+                </div>
+              </div>
               <div class="skinSettings" id="skinSettingsLayout"></div>
               <div class="modsSettings" id="modsSettingsLayout"></div>
               <div class="configInstall" id="configInstall">
@@ -101,12 +134,12 @@
                 <div class="line" style="width:95%;"></div>
                 <p style="margin-top: 10px; margin-left: 5px; margin-bottom:2px;">Note : This is the directory where minecraft/forge/fabric/mods files where be downloaded, not the </p>
                 <p style="margin-bottom: 5px; margin-top:1px; margin-left: 5px;">launcher's files ! The launcher files are downloaded in "C:/Program Files/Magnet-Launcher"</p>
-                <div class="settingsFileSelActions" style="margin-top: 20px; margin-left: 20px; margin-bottom: 2%;">
-                    <div class="settingsFileSelIcon">
+                <div class="FileSelActions" style="margin-top: 20px; margin-left: 20px; margin-bottom: 2%;">
+                    <div class="FileSelIcon">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22px" height="22px"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"/></svg>
                     </div>
-                    <input class="settingsFileSelVal" id="download_dir" type="text" value="none" disabled/>
-                    <button class="settingsFileSelButton" select-type="directories">Select folder</button>
+                    <input class="FileSelVal" id="download_dir" type="text" value="none" disabled/>
+                    <button class="FileSelButton" select-type="directories">Select folder</button>
                 </div>
                 <h2 style="margin: 5px;">Launcher Customization</h2>
                 <div class="line" style="width:95%;"></div>
@@ -187,5 +220,6 @@
         </div>
       </div>
     </div>
+    
   </body>
 </html>

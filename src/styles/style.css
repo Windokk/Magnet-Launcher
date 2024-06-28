@@ -375,6 +375,7 @@ h3{
 
 .playButton{
     color: #ffffff;
+    border: transparent;
     cursor: pointer;
     background-color: transparent;
     transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
@@ -456,6 +457,40 @@ h3{
     padding: 10px;
     padding-left: 30px;
     overflow-y: auto;
+}
+
+.number_input{
+    background-color: #1B1D23;
+    border: 1px whitesmoke solid;
+    width: 55px;
+    height: 25px;
+    color: white;
+    
+}
+
+.text_input{
+    background-color: #1B1D23;
+    border: 1px whitesmoke solid;
+    width: 250px;
+    height: 25px;
+    color: white;
+    
+}
+
+.number_input:disabled{
+    background-color: #313338;
+    border: 1px rgb(175, 175, 175) solid;
+    width: 55px;
+    height: 25px;
+    color: white;
+    cursor:not-allowed;
+    
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* SKIN */
@@ -713,12 +748,12 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-.settingsFileSelActions {
+.FileSelActions {
     display: flex;
     width: 90%;
 }
 
-.settingsFileSelIcon {
+.FileSelIcon {
     display: flex;
     align-items: center;
     background: rgba(126, 126, 126, 0.57);
@@ -727,12 +762,12 @@ input:checked + .slider:before {
     transition: 0.25s ease;
 }
 
-.settingsFileSelIcon > svg{
+.FileSelIcon > svg{
     fill: #dbdbdb;
     padding: 4px;
 }
 
-.settingsFileSelVal {
+.FileSelVal {
     border: transparent;
     width: 100%;
     max-width: 800px;
@@ -742,7 +777,7 @@ input:checked + .slider:before {
     background-color: #d8d8d8;
 }
 
-.settingsFileSelButton {
+.FileSelButton {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     border: 0px;
     border-radius: 0px 3px 3px 0px;

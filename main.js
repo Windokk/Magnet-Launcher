@@ -1,6 +1,6 @@
 const fs = require('node:fs');
-const https = require('https');
 const electron = require('electron');
+const { exec } = require('child_process');
 const dialog = electron.dialog;
 const path = require('path');
 const process = require('process')
@@ -8,7 +8,7 @@ const { BrowserWindow, ipcMain} = require('electron/main');
 const { app, remote } = require('electron')
 const ipc = ipcMain;
 
-const {vanillaInstaller} = require('./src/js/vanilla_installer');
+const { fetchVanillaData, fetchVanillaDataFromURL, installVersion } = require('./src/js/vanilla_installer');
 
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./src/js/ipcconstants');
 
@@ -18,6 +18,7 @@ const test_for_dev = path.basename(process.execPath);
 let appPath = app.getAppPath();
 
 let appDirectoryPath = "";
+
 
 if (test_for_dev === 'electron.exe') {
   console.log('Running in development');
@@ -31,28 +32,7 @@ if (test_for_dev === 'electron.exe') {
 const launcherSettingsDir = path.join(appDirectoryPath, 'launcher-settings');
 
 
-async function fetchMinecraftData() {
-  return new Promise((resolve, reject) => {
-    https.get('https://piston-meta.mojang.com/mc/game/version_manifest_v2.json', (res) => {
-      let data = '';
 
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      res.on('end', () => {
-        try {
-          const jsonData = JSON.parse(data);
-          resolve(jsonData);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }).on('error', (err) => {
-      reject(err);
-    });
-  });
-}
 
 
 function createWindow () {
@@ -75,8 +55,15 @@ function createWindow () {
   win.loadFile('src/index.html')
   const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
   const jsonData = JSON.parse(fileContent);
-  win.webContents.send('selected_bg', jsonData.backgrounds[jsonData.background].path);
-  win.webContents.send('update_download_dir', downloadFilesDir);
+  if(jsonData.background < jsonData.backgrounds.length-1 && jsonData.background >= 0){
+    win.webContents.send('selected_bg', jsonData.backgrounds[jsonData.background].path);
+  }
+  if(jsonData.javawPath){
+    win.webContents.send('updated_java_exec', jsonData);
+  }
+  if(jsonData.downloadsDir){
+    win.webContents.send('update_download_dir', jsonData.downloadsDir);
+  }
 
   //// MINIMIZE APP
   ipc.on('minimizeApp', ()=>{
@@ -126,12 +113,12 @@ function createWindow () {
   })
 
   ipc.on('getAvailableConfigs', () =>{
-    fetchMinecraftData().then((jsonData) => {
+    fetchVanillaData().then((jsonData) => {
         win.webContents.send('sentAvailableConfigs', jsonData);
       });
   })
 
-  ipc.on('installNewVersion', (event, loader, type, version, url) =>{
+  ipc.on('installNewVersion', async (event, index ,loader, type, version, url) =>{
     const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
     const jsonData = JSON.parse(fileContent);
     createnewVersion = true;
@@ -141,10 +128,17 @@ function createWindow () {
       }
     })
     if(createnewVersion){
-      jsonData.configs.push({"loader": loader, "type": type, "version": version, "url": url});
+      let new_index;
+      const manifestData = await fetchVanillaData();
+      const arraySize = manifestData.versions.length;
+      new_index = arraySize - 1 - index;
+      
+      jsonData.configs.push({"index_in_manifest_v2":index, "index": new_index, "loader": loader, "type": type, "version": version, "url": url});
       const jsonStringified = JSON.stringify(jsonData, null, 2);
       fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'),jsonStringified);
-      vanillaInstaller.installVersion(url);
+      launcherContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
+      launcherData = JSON.parse(launcherContent);
+      installVersion(jsonData.configs.length-1,url, launcherData.downloadsDir);
     }
     else{
       dialog.showMessageBoxSync(win, {message: "The same exact installation already exists !", type:"warning"});
@@ -152,12 +146,11 @@ function createWindow () {
     
   })
 
-
   /* DIALOGS */
   
   /// DOWNLOADS DIR
 
-  ipc.on('selectDownloadsDirectory', async (event, arg) => {
+  ipc.on('selectDownloadsDirectory', async () => {
     const result = await dialog.showOpenDialog(win, {
       title:"Select Downloads Directory",
       properties: ['openDirectory']
@@ -240,10 +233,55 @@ function createWindow () {
     let updatedJsonString = JSON.stringify(jsonData);
     fs.writeFileSync(path.join(launcherSettingsDir, 'launcher.json'),updatedJsonString);
     
-    win.webContents.send('selected_bg', jsonData.backgrounds[jsonData.background].path);
+    if(jsonData.background < jsonData.backgrounds.length-1 && jsonData.background >= 0){
+      win.webContents.send('selected_bg', jsonData.backgrounds[jsonData.background].path);
+    }
   })
 
-  // TODO : JAVA SELECTION
+  // JAVA SELECTION
+
+  ipc.on('selectJavaw', async () =>{
+    const result = await dialog.showOpenDialog(win, {
+      title:"Select Javaw",
+      properties: ['openFile'],
+      filters:[{ name: 'Java executable', extensions: ['exe'] }]
+    })
+
+    if (!result.canceled) {
+      const selectedFile = result.filePaths[0];
+      const path = require('path');
+
+      // Check if the selected file's path ends with "bin/javaw.exe"
+      const expectedSuffix = path.join('bin', 'javaw.exe').replace(/\\/g, '/'); // Use forward slashes for consistency
+      const normalizedFilePath = selectedFile.replace(/\\/g, '/'); // Normalize the file path to use forward slashes
+
+      if (!normalizedFilePath.endsWith(expectedSuffix)) {
+          // Show an error message
+          await dialog.showMessageBox(win, {
+            type: 'error',
+            title: 'Invalid File',
+            message: 'Please select the correct Java executable (bin/javaw.exe).'
+          });
+      }else{
+        const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
+        const jsonData = JSON.parse(fileContent);
+        jsonData.javawPath = selectedFile.replace(/\\/g, '/');
+        fs.writeFileSync(path.join(launcherSettingsDir,'launcher.json'), JSON.stringify(jsonData, null, 2));
+        win.webContents.send('updated_java_exec', jsonData);
+      }
+  }
+
+  })
+
+
+
+
+
+  ipc.on('play', (event, args) =>{
+    
+    play(args);
+  })
+
 }
 
 function createSettingsDir(){
@@ -254,6 +292,7 @@ function createSettingsDir(){
 
 function createSettingsFile(){
   if (!fs.existsSync(path.join(launcherSettingsDir, 'launcher.json'))) {
+    
     const data = {
       background:0,
       backgrounds : [
@@ -265,7 +304,8 @@ function createSettingsFile(){
           {path:"../launcher-settings/background6.jpg"},
           {path:"../launcher-settings/background7.jpg"}
         ],
-      downloadsDir: downloadFilesDir.replace(/\\/g, '/')
+      downloadsDir: path.join(downloadFilesDir, "/.magnet-launcher").replace(/\\/g, '/'),
+      javawPath: path.join(app.getPath("appData"), "AppData/Local/Packages/Microsoft.4297127D64EC6_8wekyb3d8bbwe/LocalCache/Local/runtime/java-runtime-beta/windows-x64/java-runtime-beta/bin/javaw.exe").replace(/\\/g, '/')
     };
     const jsonData = JSON.stringify(data, null, 2);
     fs.writeFileSync(path.join(launcherSettingsDir, 'launcher.json'),jsonData);
@@ -302,6 +342,8 @@ ipc.on('complementary_link', () =>{
 })
 
 
+
+
 const REDIRECT_URI_PREFIX = 'https://login.microsoftonline.com/common/oauth2/nativeclient?'
 
 // Microsoft Auth Login
@@ -318,7 +360,7 @@ ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
     msftAuthViewSuccess = arguments_[0]
     msftAuthViewOnClose = arguments_[1]
     msftAuthWindow = new BrowserWindow({
-        title: LangLoader.queryJS('index.microsoftLoginTitle'),
+        title: "MicrosoftAuth",
         backgroundColor: '#222222',
         width: 520,
         height: 600,
@@ -376,3 +418,43 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+
+
+
+
+function play(JVM_ARGS){
+  let command = "";
+
+  const launcherfileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
+  const launcherjsonData = JSON.parse(launcherfileContent);
+  const configsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
+  const configsjsonData = JSON.parse(configsfileContent);
+
+  const versionFilejsonData = fetchVanillaDataFromURL(configsjsonData.configs[configsjsonData.current].index, configsjsonData.configs[configsjsonData.current].url, launcherjsonData.downloadsDir);
+
+
+ 
+
+  JAVA_EXEC = launcherjsonData.javawPath;
+  HEAP_DUMP_PATH = versionFilejsonData.heap_dump_path;
+  OS_NAME = versionFilejsonData.os_name;
+  OS_VERSION = versionFilejsonData.os_version;
+  JAVA_OPTIONS = versionFilejsonData.java_options;
+  CLASSPATH =  versionFilejsonData.classpath;
+  GAME_ARGS = `net.minecraft.client.main.Main --username Windokk --version ${configsjsonData.configs[configsjsonData.current].version} --gameDir ${launcherjsonData.downloadsDir} --assetsDir ${path.join(launcherjsonData.downloadsDir, "/configs/", configsjsonData.configs[configsjsonData.current].version,"/assets")} --assetIndex ${versionFilejsonData.assetIndex} $ --uuid eb5b1420d5974762afe46f69b31d6c06 --accessToken eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ3MDgwODQzMTIxNyIsImFnZyI6IkFkdWx0Iiwic3ViIjoiM2NlNDE5YzctZjZmNS00MTVkLTgwMjYtMjQwMjcxZjkzZTVjIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwiZmxhZ3MiOlsidHdvZmFjdG9yYXV0aCIsIm1zYW1pZ3JhdGlvbl9zdGFnZTQiLCJvcmRlcnNfMjAyMiIsIm11bHRpcGxheWVyIl0sInByb2ZpbGVzIjp7Im1jIjoiZWI1YjE0MjAtZDU5Ny00NzYyLWFmZTQtNmY2OWIzMWQ2YzA2In0sInBsYXRmb3JtIjoiT05FU1RPUkUiLCJ5dWlkIjoiYzYyNDFhYzQ4Yjk2MzIwNDIxZWEyMGE2ZmE3MDk2NDMiLCJuYmYiOjE3MTk0MTA1OTEsImV4cCI6MTcxOTQ5Njk5MSwiaWF0IjoxNzE5NDEwNTkxfQ.OObUgmZ6vGBP_SI8kj-cvHqdGBv_UKzh7sZ5F_-MU-4 --clientId MDkwYzYwOWItYjhkMC00YTAwLTkxOTEtYjljYzU0NDY2ZDlm --xuid 2535470808431217 --userType msa --versionType ${configsjsonData.configs[configsjsonData.current].type}`;
+/*
+  command = `${JAVA_EXEC} ${HEAP_DUMP_PATH} ${OS_NAME} ${OS_VERSION} ${JAVA_OPTIONS} ${CLASSPATH} ${JVM_ARGS} ${GAME_ARGS}`
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });*/
+}

@@ -540,32 +540,49 @@ function getVanillaInfosFromVersion(fullVersion){
     let version_ = parts[1];
 
     if (type_=="release"){
-        const version = Available_Vanilla_Configs.versions
-            .filter(version => version.type === type_)
-            .filter(version => version.id === version_)
-            .map(({ id, url }) => ({ id, url }));
-        ipc.send('installNewVersion', "vanilla", "release", version[0].id, version[0].url);
+        const filteredVersion = Available_Vanilla_Configs.versions.find(version => version.type === type_ && version.id === version_);
+        
+        if (filteredVersion) {
+            const index = Available_Vanilla_Configs.versions.indexOf(filteredVersion);
+            const id = filteredVersion.id;
+            const url = filteredVersion.url;
+
+            ipc.send('installNewVersion', index ,"vanilla", "release", id, url);
+        }
+        
     }
     if (type_=="snapshot"){
-        const version = Available_Vanilla_Configs.versions
-            .filter(version => version.type === type_)
-            .filter(version => version.id === version_)
-            .map(({ id, url }) => ({ id, url }));
-        ipc.send('installNewVersion', "vanilla", "snapshot", version[0].id, version[0].url);
+        const filteredVersion = Available_Vanilla_Configs.versions.find(version => version.type === type_ && version.id === version_);
+        
+        if (filteredVersion) {
+            const index = Available_Vanilla_Configs.versions.indexOf(filteredVersion);
+            const id = filteredVersion.id;
+            const url = filteredVersion.url;
+
+            ipc.send('installNewVersion', index ,"vanilla", "snapshot", id, url);
+        }
     }
     if (type_=="old_beta"){
-        const version = Available_Vanilla_Configs.versions
-            .filter(version => version.type === type_)
-            .filter(version => version.id === version_)
-            .map(({ id, url }) => ({ id, url }));
-        ipc.send('installNewVersion', "vanilla", "old_beta", version[0].id, version[0].url);
+        const filteredVersion = Available_Vanilla_Configs.versions.find(version => version.type === type_ && version.id === version_);
+        
+        if (filteredVersion) {
+            const index = Available_Vanilla_Configs.versions.indexOf(filteredVersion);
+            const id = filteredVersion.id;
+            const url = filteredVersion.url;
+
+            ipc.send('installNewVersion', index ,"vanilla", "old_beta", id, url);
+        }
     }
     if (type_=="old_alpha"){
-        const version = Available_Vanilla_Configs.versions
-            .filter(version => version.type === type_)
-            .filter(version => version.id === version_)
-            .map(({ id, url }) => ({ id, url }));
-        ipc.send('installNewVersion', "vanilla", "old_alpha", version[0].id, version[0].url);
+        const filteredVersion = Available_Vanilla_Configs.versions.find(version => version.type === type_ && version.id === version_);
+        
+        if (filteredVersion) {
+            const index = Available_Vanilla_Configs.versions.indexOf(filteredVersion);
+            const id = filteredVersion.id;
+            const url = filteredVersion.url;
+
+            ipc.send('installNewVersion', index ,"vanilla", "old_alpha", id, url);
+        }
     }
 }
 
@@ -721,6 +738,23 @@ document.getElementById('complementary_link').addEventListener('click', () => {
     ipc.send("complementary_link");
 })
 
+/// GAME SETTINGS ///
+
+document.getElementById('fullscreen').addEventListener('change', () =>{
+    if (document.getElementById('fullscreen').checked) {
+        document.getElementById('resX').disabled = true;
+        document.getElementById('resY').disabled = true;
+
+    } else {
+        document.getElementById('resX').disabled = false;
+        document.getElementById('resY').disabled = false;
+    }
+})
+
+ipc.on('updated_java_exec', (event, jsonData) =>{
+    document.getElementById('java_path').setAttribute('value', jsonData.javawPath);
+})
+
 
 /// LAUNCHER SETTINGS ///
 
@@ -735,10 +769,15 @@ autoUpdate.addEventListener('change', () => {
     }
 });
 
-for (let ele of document.getElementsByClassName('settingsFileSelButton')) {
+for (let ele of document.getElementsByClassName('FileSelButton')) {
     if (ele.getAttribute('select-type') === "directories") {
         ele.onclick = async e => {
             ipc.send('selectDownloadsDirectory');
+        }
+    }
+    if (ele.getAttribute('select-type') === "java") {
+        ele.onclick = async e => {
+            ipc.send('selectJavaw');
         }
     }
 }
@@ -788,3 +827,13 @@ ipc.on('selected_bg', async (event, customBG) => {
     }
     
 });
+
+
+
+/// PLAY ///
+
+document.getElementById('playButton').addEventListener('click',() =>{
+
+    JVMArgs = document.getElementById('JVMArgs').getAttribute('value');
+    ipc.send('play', JVMArgs);
+})
