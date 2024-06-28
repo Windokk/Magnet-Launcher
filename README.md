@@ -77,7 +77,7 @@ Install Electron and Electron-builder
 Go to the project's scripts directory
 
 ```batch
-  cd Magnet-Launcher/scripts
+  cd scripts
 ```
 
 Run the build-and-run file
