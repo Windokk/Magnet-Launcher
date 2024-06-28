@@ -20,14 +20,15 @@ A Minecraft Java Launcher in JS built with Electron
 <br>
 </div>
 
-
+<br>
 
 > [!WARNING]  
 > The Launcher is currently in a pre-alpha state. A lot of features are missing and you may exepct a lot of bugs.
 
-
+<br>
 
 <div align="center">
+  
 ## Screenshots
 
 <img src="./github/image.png" width="1030"/>
