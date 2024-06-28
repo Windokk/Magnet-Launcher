@@ -40,7 +40,8 @@ A Minecraft Java Launcher in JS built with Electron
 
 # Developpement
 
-[!NOTE]Make sure to have Node.js 20.14 or higher installed on your local machine before starting any developpement work
+> [!NOTE]
+> Make sure to have Node.js 20.14 or higher installed on your local machine before starting any developpement work
 
 ## Developer Documentation
 
