@@ -5,10 +5,10 @@
 # Welcome to the Magnet Launcher !
 
 
-<img src="https://img.shields.io/static/v1?label=Build&message=Passing&color=brightgreen&logo=javascript&style=for-the-badge" width="130"/>
+<img src="https://img.shields.io/static/v1?label=Build&message=Passing&color=brightgreen&logo=electron&logoColor=ffffff&style=for-the-badge"/>
 <br>
-<a href="#to-do-list-alpha-001"><img src="https://img.shields.io/static/v1?label=Status&message=Alpha%200.0.1%20In%20Progress&color=orange&style=for-the-badge" width="275"/></a>
-<a href="LICENSE"><img src="https://img.shields.io/static/v1?label=License&message=GNU%20GPL%20V3&logo=gnu&color=blue&style=for-the-badge" href="https://www.gnu.org/licenses/gpl-3.0.html" width="200"/></a>
+<a href="#to-do-list-alpha-001"><img src="https://img.shields.io/static/v1?label=Status&message=Alpha%200.0.1%20In%20Progress&color=orange&style=for-the-badge"/></a>
+<a href="LICENSE"><img src="https://img.shields.io/static/v1?label=License&message=GNU%20GPL%20V3&logo=gnu&color=blue&style=for-the-badge" href="https://www.gnu.org/licenses/gpl-3.0.html"/></a>
 
 <br>
 A Minecraft Java Launcher in JS built with Electron
