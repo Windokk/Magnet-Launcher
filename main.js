@@ -6,6 +6,8 @@ const path = require('path');
 const process = require('process')
 const { BrowserWindow, ipcMain} = require('electron/main');
 const { app, remote } = require('electron')
+
+
 const ipc = ipcMain;
 
 const { fetchVanillaData, fetchVanillaDataFromURL, installVersion } = require('./src/js/vanilla_installer');
@@ -30,8 +32,6 @@ if (test_for_dev === 'electron.exe') {
 }
 
 const launcherSettingsDir = path.join(appDirectoryPath, 'launcher-settings');
-
-
 
 
 
@@ -138,7 +138,12 @@ function createWindow () {
       fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'),jsonStringified);
       launcherContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
       launcherData = JSON.parse(launcherContent);
-      await installVersion(new_index, url, launcherData.downloadsDir);
+      if(684 >= new_index && new_index >= 587){
+        await installVersion(new_index, url, launcherData.downloadsDir).then(() => console.log('Version installation complete'))
+          .catch(error => console.error('Version installation failed:', error));
+      }else{
+        console.log("Can't install right now");
+      }
     }
     else{
       dialog.showMessageBoxSync(win, {message: "The same exact installation already exists !", type:"warning"});
@@ -341,6 +346,10 @@ ipc.on('complementary_link', () =>{
   require('electron').shell.openExternal("https://www.complementary.dev/shaders/")
 })
 
+ipc.on('icons8_link', () =>{
+  require('electron').shell.openExternal("https://icons8.com/icons/")
+})
+
 
 
 
@@ -423,7 +432,7 @@ app.on('window-all-closed', () => {
 
 
 
-function play(JVM_ARGS){
+async function play(JVM_ARGS){
   let command = "";
 
   const launcherfileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
@@ -431,21 +440,29 @@ function play(JVM_ARGS){
   const configsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
   const configsjsonData = JSON.parse(configsfileContent);
 
-  const versionFilejsonData = fetchVanillaDataFromURL(configsjsonData.configs[configsjsonData.current].index, configsjsonData.configs[configsjsonData.current].url, launcherjsonData.downloadsDir);
+  const versionFilejsonData = await fetchVanillaDataFromURL(configsjsonData.configs[configsjsonData.current].index, configsjsonData.configs[configsjsonData.current].url, launcherjsonData.downloadsDir);
 
+  //User's data : 
+  const accessToken = "";
+  const username = "";
+  const UUID = "";
+  const clientID = "";
+  const XUID = "";
 
- 
 
   JAVA_EXEC = launcherjsonData.javawPath;
   HEAP_DUMP_PATH = versionFilejsonData.heap_dump_path;
-  OS_NAME = ///versionFilejsonData.os_name;///
+  OS_NAME = `"${versionFilejsonData.os_name}"`;
   OS_VERSION = versionFilejsonData.os_version;
   JAVA_OPTIONS = versionFilejsonData.java_options;
   CLASSPATH =  versionFilejsonData.classpath;
-  GAME_ARGS = `net.minecraft.client.main.Main --username Windokk --version ${configsjsonData.configs[configsjsonData.current].version} --gameDir ${launcherjsonData.downloadsDir} --assetsDir ${path.join(launcherjsonData.downloadsDir, "/configs/", configsjsonData.configs[configsjsonData.current].version,"/assets")} --assetIndex ${versionFilejsonData.assetIndex} $ --uuid eb5b1420d5974762afe46f69b31d6c06 --accessToken eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQ3MDgwODQzMTIxNyIsImFnZyI6IkFkdWx0Iiwic3ViIjoiM2NlNDE5YzctZjZmNS00MTVkLTgwMjYtMjQwMjcxZjkzZTVjIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwiZmxhZ3MiOlsidHdvZmFjdG9yYXV0aCIsIm1zYW1pZ3JhdGlvbl9zdGFnZTQiLCJvcmRlcnNfMjAyMiIsIm11bHRpcGxheWVyIl0sInByb2ZpbGVzIjp7Im1jIjoiZWI1YjE0MjAtZDU5Ny00NzYyLWFmZTQtNmY2OWIzMWQ2YzA2In0sInBsYXRmb3JtIjoiT05FU1RPUkUiLCJ5dWlkIjoiYzYyNDFhYzQ4Yjk2MzIwNDIxZWEyMGE2ZmE3MDk2NDMiLCJuYmYiOjE3MTk0MTA1OTEsImV4cCI6MTcxOTQ5Njk5MSwiaWF0IjoxNzE5NDEwNTkxfQ.OObUgmZ6vGBP_SI8kj-cvHqdGBv_UKzh7sZ5F_-MU-4 --clientId MDkwYzYwOWItYjhkMC00YTAwLTkxOTEtYjljYzU0NDY2ZDlm --xuid 2535470808431217 --userType msa --versionType ${configsjsonData.configs[configsjsonData.current].type}`;
-/*
+  GAME_ARGS = `net.minecraft.client.main.Main --username ${username} --version ${configsjsonData.configs[configsjsonData.current].version} --gameDir ${launcherjsonData.downloadsDir} --assetsDir ${path.join(launcherjsonData.downloadsDir, "/configs/", configsjsonData.configs[configsjsonData.current].version,"/assets")} --assetIndex ${versionFilejsonData.asset_index} --uuid ${UUID} --accessToken ${accessToken} --clientId ${clientID} --xuid ${XUID} --userType msa --versionType ${configsjsonData.configs[configsjsonData.current].type}`;
+
   command = `${JAVA_EXEC} ${HEAP_DUMP_PATH} ${OS_NAME} ${OS_VERSION} ${JAVA_OPTIONS} ${CLASSPATH} ${JVM_ARGS} ${GAME_ARGS}`
 
+  console.log(command);
+
+  
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
@@ -456,5 +473,5 @@ function play(JVM_ARGS){
       return;
     }
     console.log(`stdout: ${stdout}`);
-  });*/
+  });
 }

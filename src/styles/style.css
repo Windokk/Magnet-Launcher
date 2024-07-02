@@ -952,6 +952,15 @@ input:checked + .slider:before {
     text-decoration: underline;
 }
 
+.aboutSettings > #icons8_link{
+    color:#949AA7;
+    text-decoration: none;
+}
+
+.aboutSettings > #icons8_link:hover{
+    text-decoration: underline;
+}
+
 #discordSVG {
     fill: #ffffff;
     transform: scale(1);

@@ -12,17 +12,17 @@
     "appId": "net.windokk.magnet-launcher",
     "win": {
       "target": "nsis",
-      "icon":"build/icon.ico"
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon":"build/icon.ico",
-      "uninstallerIcon":"build/icon.ico",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
       "artifactName": "${productName} Setup ${version}.exe",
       "license": "build/gpl-3.0.rtf",
       "uninstallDisplayName": "${productName}",
-      "runAfterFinish":true
+      "runAfterFinish": true
     }
   },
   "repository": {
@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/Windokk/Magnet-Launcher#readme",
   "devDependencies": {
-    "electron": "^31.0.2",
+    "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-squirrel-startup": "^1.0.1"
   },

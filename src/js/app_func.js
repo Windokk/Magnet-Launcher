@@ -271,15 +271,17 @@ ipc.on('sentAvailableConfigs', (event, jsonData)=>{
 async function selectRelease(){
     document.getElementById('typeSelector').textContent = "Release";
 
-    if(!document.getElementById('versionSelector')){
+    if(!document.getElementById('versionSelector') && !document.getElementById('versionTitle') && !document.getElementById('versionTitleLine')){
         versionTitle = document.createElement('h2');
         versionTitle.style="margin: 5px;";
-        versionTitle.textContent = "Version"
+        versionTitle.textContent = "Version";
+        versionTitle.setAttribute("id", "versionTitle");
         document.getElementById('configInstall').appendChild(versionTitle);
 
         versionTitleLine = document.createElement('div');
         versionTitleLine.className = "line";
         versionTitleLine.style="width:95%;";
+        versionTitleLine.setAttribute("id", "versionTitleLine");
         document.getElementById('configInstall').appendChild(versionTitleLine);
 
         dropdown = document.createElement('div');
@@ -298,7 +300,9 @@ async function selectRelease(){
 
         ipc.send('getAvailableConfigs');
 
-        await magnet_utils.sleep(500);
+        while(!Available_Vanilla_Configs){
+            await magnet_utils.sleep(1);
+        }
 
         const releaseVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'release')
@@ -315,7 +319,7 @@ async function selectRelease(){
 
         document.getElementById('configInstall').appendChild(dropdown);
     }
-    else{
+    else if(document.getElementById('dropdownContent')){
         document.getElementById("dropdownContent").innerHTML = "";
         const releaseVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'release')
@@ -335,15 +339,17 @@ async function selectRelease(){
 async function selectSnapshot(){
     document.getElementById('typeSelector').textContent = "Snapshot";
 
-    if(!document.getElementById('versionSelector')){
+    if(!document.getElementById('versionSelector') && !document.getElementById('versionTitle') && !document.getElementById('versionTitleLine')){
         versionTitle = document.createElement('h2');
         versionTitle.style="margin: 5px;";
-        versionTitle.textContent = "Version"
+        versionTitle.textContent = "Version";
+        versionTitle.setAttribute("id", "versionTitle");
         document.getElementById('configInstall').appendChild(versionTitle);
 
         versionTitleLine = document.createElement('div');
         versionTitleLine.className = "line";
         versionTitleLine.style="width:95%;";
+        versionTitleLine.setAttribute("id", "versionTitleLine");
         document.getElementById('configInstall').appendChild(versionTitleLine);
 
         dropdown = document.createElement('div');
@@ -362,7 +368,9 @@ async function selectSnapshot(){
 
         ipc.send('getAvailableConfigs');
 
-        await magnet_utils.sleep(500);
+        while(!Available_Vanilla_Configs){
+            await magnet_utils.sleep(1);
+        }
 
         const snapshotVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'snapshot')
@@ -379,7 +387,7 @@ async function selectSnapshot(){
 
         document.getElementById('configInstall').appendChild(dropdown);
     }
-    else{
+    else if(document.getElementById('dropdownContent')){
         document.getElementById("dropdownContent").innerHTML = "";
         const snapshotVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'snapshot')
@@ -397,15 +405,17 @@ async function selectSnapshot(){
 async function selectBeta(){
     document.getElementById('typeSelector').textContent = "Old Beta";
 
-    if(!document.getElementById('versionSelector')){
+    if(!document.getElementById('versionSelector') && !document.getElementById('versionTitle') && !document.getElementById('versionTitleLine')){
         versionTitle = document.createElement('h2');
         versionTitle.style="margin: 5px;";
-        versionTitle.textContent = "Version"
+        versionTitle.textContent = "Version";
+        versionTitle.setAttribute("id", "versionTitle");
         document.getElementById('configInstall').appendChild(versionTitle);
 
         versionTitleLine = document.createElement('div');
         versionTitleLine.className = "line";
         versionTitleLine.style="width:95%;";
+        versionTitleLine.setAttribute("id", "versionTitleLine");
         document.getElementById('configInstall').appendChild(versionTitleLine);
 
         dropdown = document.createElement('div');
@@ -424,13 +434,15 @@ async function selectBeta(){
 
         ipc.send('getAvailableConfigs');
 
-        await magnet_utils.sleep(500);
+        while(!Available_Vanilla_Configs){
+            await magnet_utils.sleep(1);
+        }
 
-        const snapshotVersions = Available_Vanilla_Configs.versions
+        const betaVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'old_beta')
             .map(({ id, url }) => ({ id, url }));
 
-        snapshotVersions.forEach(({ id, url }) =>{
+        betaVersions.forEach(({ id, url }) =>{
             const version = document.createElement('a');
             version.textContent = `old_beta-${id}`;
             version.addEventListener('click', () => {selectVanillaVersion(`old_beta-${id}`)});
@@ -441,7 +453,7 @@ async function selectBeta(){
 
         document.getElementById('configInstall').appendChild(dropdown);
     }
-    else{
+    else if(document.getElementById('dropdownContent')){
         document.getElementById("dropdownContent").innerHTML = "";
         const snapshotVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'old_beta')
@@ -459,15 +471,17 @@ async function selectBeta(){
 async function selectAlpha(){
     document.getElementById('typeSelector').textContent = "Old Alpha";
 
-    if(!document.getElementById('versionSelector')){
+    if(!document.getElementById('versionSelector') && !document.getElementById('versionTitle') && !document.getElementById('versionTitleLine')){
         versionTitle = document.createElement('h2');
         versionTitle.style="margin: 5px;";
-        versionTitle.textContent = "Version"
+        versionTitle.textContent = "Version";
+        versionTitle.setAttribute("id", "versionTitle");
         document.getElementById('configInstall').appendChild(versionTitle);
 
         versionTitleLine = document.createElement('div');
         versionTitleLine.className = "line";
         versionTitleLine.style="width:95%;";
+        versionTitleLine.setAttribute("id", "versionTitleLine");
         document.getElementById('configInstall').appendChild(versionTitleLine);
 
         dropdown = document.createElement('div');
@@ -486,13 +500,15 @@ async function selectAlpha(){
 
         ipc.send('getAvailableConfigs');
 
-        await magnet_utils.sleep(500);
+        while(!Available_Vanilla_Configs){
+            await magnet_utils.sleep(1);
+        }
 
-        const snapshotVersions = Available_Vanilla_Configs.versions
+        const alphaVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'old_alpha')
             .map(({ id, url }) => ({ id, url }));
 
-        snapshotVersions.forEach(({ id, url }) =>{
+        alphaVersions.forEach(({ id, url }) =>{
             const version = document.createElement('a');
             version.textContent = `old_alpha-${id}`;
             version.addEventListener('click', () => {selectVanillaVersion(`old_alpha-${id}`)});
@@ -503,7 +519,7 @@ async function selectAlpha(){
 
         document.getElementById('configInstall').appendChild(dropdown);
     }
-    else{
+    else if(document.getElementById('dropdownContent')){
         document.getElementById("dropdownContent").innerHTML = "";
         const snapshotVersions = Available_Vanilla_Configs.versions
             .filter(version => version.type === 'old_alpha')
@@ -736,6 +752,10 @@ document.getElementById('mcheads_link').addEventListener('click', () => {
 
 document.getElementById('complementary_link').addEventListener('click', () => {
     ipc.send("complementary_link");
+})
+
+document.getElementById('icons8_link').addEventListener('click', () =>{
+    ipc.send("icons8_link");
 })
 
 /// GAME SETTINGS ///

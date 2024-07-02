@@ -77,7 +77,7 @@ Install Electron and Electron-builder
 Go to the project's scripts directory
 
 ```batch
-  cd Magnet-Launcher/scripts
+  cd scripts
 ```
 
 Run the build-and-run file
@@ -138,6 +138,7 @@ Thank you for contributing to our project!
 - Font Awesome (Icons) : [Font Awesome](https://fontawesome.com/)
 - MC-Heads (Skins getter) : [MC-Heads](https://mc-heads.net/)
 - Complementary Shaders (Backgrounds) : [Complementary Shaders](https://www.complementary.dev/shaders/)
+- Icons8 (Some Icons) : [Icons8](https://icons8.com/icons/)
 
 ## Authors
 
