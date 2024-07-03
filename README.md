@@ -28,6 +28,8 @@ A Minecraft Java Launcher in JS built with Electron
 <br>
 
 <div align="center">
+
+![discord](https://discord.com/api/guilds/1258045742220705852/widget.png?style=banner2)
   
 ## Screenshots
 
