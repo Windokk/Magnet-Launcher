@@ -216,9 +216,15 @@ function getWindowsComplexDownloadPaths(complexDownloads){
   
 async function fetchVanillaDataFromURL(index, url, files_dl_dir){
 
+    if(index > 684){
+      const data = await fetchJson(url);
+
+
+    }
+
     if(684 >= index && index >= 587){
 
-      //If the version is in between  21w38a and 23w17a (has xuid, clientId) (has osname, osversion as jvm attributes)
+      //If the version is in between 21w38a and 23w17a (has xuid, clientId) (has osname, osversion as jvm attributes)
       const data = await fetchJson(url);
 
       classpath = ``;
@@ -316,6 +322,27 @@ async function installVersion(index, url, files_dl_dir) {
         await downloadAsset(data.objects[key].hash, versionData.id, files_dl_dir);
       }
     }
+
+    if (!fs.existsSync(path.join(files_dl_dir, "configs", versionData.id, "assets", "indexes", `${versionData.asset_index}.json`))) {
+      if (!fs.existsSync(path.join(files_dl_dir, "configs", versionData.id, "assets", "indexes"))) {
+        fs.mkdirSync(path.join(files_dl_dir, "configs", versionData.id, "assets", "indexes"), { recursive: true });
+      }
+  
+      try {
+        const response = await fetch(versionData.assetsJsonURL);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const buffer = await response.arrayBuffer();
+  
+  
+        fs.writeFileSync(path.join(files_dl_dir, "configs", versionData.id, "assets", "indexes", `${versionData.asset_index}.json`), Buffer.from(buffer));
+  
+      } catch (error) {
+        console.error('Download failed:', error, "filePath :", path.join(files_dl_dir, "configs", versionData.id, "assets", "indexes", `${versionData.asset_index}.json`));
+      }
+    }
+
     // THEN WE DOWNLOAD THE LIBRARIES
 
     //BASIC LIBS

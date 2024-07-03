@@ -460,7 +460,6 @@ async function play(JVM_ARGS){
 
   command = `${JAVA_EXEC} ${HEAP_DUMP_PATH} ${OS_NAME} ${OS_VERSION} ${JAVA_OPTIONS} ${CLASSPATH} ${JVM_ARGS} ${GAME_ARGS}`
 
-  console.log(command);
 
   
   exec(command, (error, stdout, stderr) => {
