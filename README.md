@@ -23,7 +23,7 @@ A Minecraft Java Launcher in JS built with Electron
 <br>
 
 > [!WARNING]  
-> The Launcher is currently in a pre-alpha state. A lot of features are missing and you may exepct a lot of bugs.
+> The Launcher is currently in a pre-alpha state. A lot of features are missing and you may expect a lot of bugs.
 
 <br>
 
