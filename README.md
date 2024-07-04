@@ -73,10 +73,6 @@ A Minecraft Java Launcher in JS built with Electron
 - [ ]  Accounts Settings
 - [ ]  Skin Settings
 
-## Developer Documentation
-
-*In Progress*
-
 ## Build and run locally (Windows)
 
 Clone the project
