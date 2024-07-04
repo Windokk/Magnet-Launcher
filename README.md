@@ -33,7 +33,7 @@ A Minecraft Java Launcher in JS built with Electron
 <div align="center">
 
 
-
+[![Discord](https://discord.com/api/guilds/1258045742220705852/widget.png?style=banner2)](https://discord.gg/qSXk8qA6Nw)
 
 
 ## Screenshots
