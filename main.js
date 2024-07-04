@@ -332,26 +332,31 @@ function createConfigsFile(){
 
 ipc.on('electron_link', () =>{
   require('electron').shell.openExternal("https://www.electronjs.org/")
-})
+});
 
 ipc.on('fontawesome_link', () =>{
   require('electron').shell.openExternal("https://fontawesome.com/")
-})
+});
 
 ipc.on('mcheads_link', () =>{
   require('electron').shell.openExternal("https://mc-heads.net/")
-})
+});
 
 ipc.on('complementary_link', () =>{
   require('electron').shell.openExternal("https://www.complementary.dev/shaders/")
-})
+});
 
 ipc.on('icons8_link', () =>{
   require('electron').shell.openExternal("https://icons8.com/icons/")
-})
+});
 
+ipc.on('reportIssue', () =>{
+  require('electron').shell.openExternal("https://github.com/Windokk/Magnet-Launcher/issues");
+});
 
-
+ipc.on('discord_link', () =>{
+  require('electron').shell.openExternal("https://discord.gg/qSXk8qA6Nw");
+});
 
 const REDIRECT_URI_PREFIX = 'https://login.microsoftonline.com/common/oauth2/nativeclient?'
 

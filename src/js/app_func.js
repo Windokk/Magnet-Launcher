@@ -758,6 +758,14 @@ document.getElementById('icons8_link').addEventListener('click', () =>{
     ipc.send("icons8_link");
 })
 
+document.getElementById('reportbugBtn').addEventListener('click', () =>{
+    ipc.send("reportIssue");
+})
+
+document.getElementById('discordSVG').addEventListener('click', () => {
+    ipc.send("discord_link");
+})
+
 /// GAME SETTINGS ///
 
 document.getElementById('fullscreen').addEventListener('change', () =>{
