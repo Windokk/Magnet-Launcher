@@ -60,6 +60,19 @@ A Minecraft Java Launcher in JS built with Electron
 > [!NOTE]
 > Make sure to have Node.js 20.14 or higher installed on your local machine before starting any developpement work
 
+## Task List - Alpha 0.0.1
+
+- [x]  Main Page UI (Top Bar, Basic Layouts)
+- [x]  Game Settings
+- [x]  About Page
+- [x]  Launcher Settings
+- [x]  Vanilla Config Installation (Automatic)
+- [x]  Game Launching
+- [x]  Login Page UI
+- [ ]  MS Account Login
+- [ ]  Accounts Settings
+- [ ]  Skin Settings
+
 ## Developer Documentation
 
 *In Progress*
