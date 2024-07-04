@@ -21,7 +21,6 @@ let appPath = app.getAppPath();
 
 let appDirectoryPath = "";
 
-
 if (test_for_dev === 'electron.exe') {
   console.log('Running in development');
   appDirectoryPath = __dirname.replace(/\\/g, '/');
@@ -52,9 +51,10 @@ function createWindow () {
     }
   })
 
-  win.loadFile('src/index.html')
-  const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
-  const jsonData = JSON.parse(fileContent);
+  win.loadFile('src/login.html')
+  win.webContents.send('launcherAccountsSettingsDir', launcherSettingsDir);
+  let fileContent = fs.readFileSync(path.join(launcherSettingsDir,'launcher.json'), 'utf-8');
+  let jsonData = JSON.parse(fileContent);
   if(jsonData.background < jsonData.backgrounds.length-1 && jsonData.background >= 0){
     win.webContents.send('selected_bg', jsonData.backgrounds[jsonData.background].path);
   }
@@ -64,6 +64,15 @@ function createWindow () {
   if(jsonData.downloadsDir){
     win.webContents.send('update_download_dir', jsonData.downloadsDir);
   }
+
+  ipc.on('loadLauncherPage', () =>{
+    win.loadFile('src/index.html');
+    
+  })
+
+  ipc.on('loadedLauncherPage', () =>{
+    win.webContents.send('PlayerInfos', path.join(launcherSettingsDir,'accounts.json'));
+  })
 
   //// MINIMIZE APP
   ipc.on('minimizeApp', ()=>{
@@ -367,7 +376,7 @@ let msftAuthViewSuccess
 let msftAuthViewOnClose
 ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
     if (msftAuthWindow) {
-        ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN, msftAuthViewOnClose)
+        ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN, msftAuthViewOnClose, launcherSettingsDir)
         return
     }
     msftAuthSuccess = false
@@ -387,11 +396,12 @@ ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
 
     msftAuthWindow.on('close', () => {
         if(!msftAuthSuccess) {
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED, msftAuthViewOnClose)
+            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED, msftAuthViewOnClose, launcherSettingsDir)
         }
     })
 
     msftAuthWindow.webContents.on('did-navigate', (_, uri) => {
+
         if (uri.startsWith(REDIRECT_URI_PREFIX)) {
             let queries = uri.substring(REDIRECT_URI_PREFIX.length).split('#', 1).toString().split('&')
             let queryMap = {}
@@ -401,7 +411,7 @@ ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
                 queryMap[name] = decodeURI(value)
             })
 
-            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.SUCCESS, queryMap, msftAuthViewSuccess)
+            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.SUCCESS, queryMap, msftAuthViewSuccess, launcherSettingsDir)
 
             msftAuthSuccess = true
             msftAuthWindow.close()
@@ -411,7 +421,65 @@ ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
 
     msftAuthWindow.removeMenu()
     msftAuthWindow.loadURL(`https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?prompt=select_account&client_id=${AZURE_CLIENT_ID}&response_type=code&scope=XboxLive.signin%20offline_access&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient`)
+
 })
+
+// Microsoft Auth Logout
+let msftLogoutWindow
+let msftLogoutSuccess
+let msftLogoutSuccessSent
+ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
+    if (msftLogoutWindow) {
+        ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN)
+        return
+    }
+
+    msftLogoutSuccess = false
+    msftLogoutSuccessSent = false
+    msftLogoutWindow = new BrowserWindow({
+        title: LangLoader.queryJS('index.microsoftLogoutTitle'),
+        backgroundColor: '#222222',
+        width: 520,
+        height: 600,
+        frame: true,
+        icon: getPlatformIcon('SealCircle')
+    })
+
+    msftLogoutWindow.on('closed', () => {
+        msftLogoutWindow = undefined
+    })
+
+    msftLogoutWindow.on('close', () => {
+        if(!msftLogoutSuccess) {
+            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.NOT_FINISHED)
+        } else if(!msftLogoutSuccessSent) {
+            msftLogoutSuccessSent = true
+            ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.SUCCESS, uuid, isLastAccount)
+        }
+    })
+    
+    msftLogoutWindow.webContents.on('did-navigate', (_, uri) => {
+        if(uri.startsWith('https://login.microsoftonline.com/common/oauth2/v2.0/logoutsession')) {
+            msftLogoutSuccess = true
+            setTimeout(() => {
+                if(!msftLogoutSuccessSent) {
+                    msftLogoutSuccessSent = true
+                    ipcEvent.reply(MSFT_OPCODE.REPLY_LOGOUT, MSFT_REPLY_TYPE.SUCCESS, uuid, isLastAccount)
+                }
+
+                if(msftLogoutWindow) {
+                    msftLogoutWindow.close()
+                    msftLogoutWindow = null
+                }
+            }, 5000)
+        }
+    })
+    
+    msftLogoutWindow.removeMenu()
+    msftLogoutWindow.loadURL('https://login.microsoftonline.com/common/oauth2/v2.0/logout')
+})
+
+
 
 
 app.whenReady().then(() => {

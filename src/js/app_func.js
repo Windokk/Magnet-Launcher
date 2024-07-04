@@ -3,7 +3,7 @@ const { shell } = require('electron');
 const path = require('path');
 const magnet_utils = require('./js/utils.js');
 const { version } = require('process');
-
+const fs = require('fs');
 
 const maxResBtn = document.getElementById('maxResBtn')
 const sidebar = document.getElementById('sidebar')
@@ -22,6 +22,17 @@ let Available_Vanilla_Configs;
 
 
 showMainLayout();
+
+ipc.send('loadedLauncherPage');
+
+ipc.on('PlayerInfos', (event, path) =>{
+    const fileContent = fs.readFileSync(path, 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    setPlayerInfos(jsonData.accounts[jsonData.selectedAccount].uuid, jsonData.accounts[jsonData.selectedAccount].displayName, jsonData.accounts[jsonData.selectedAccount].type);
+})
+
+
+
 
 let receivedDownloadFilesDir = "";
 
@@ -865,3 +876,13 @@ document.getElementById('playButton').addEventListener('click',() =>{
     JVMArgs = document.getElementById('JVMArgs').getAttribute('value');
     ipc.send('play', JVMArgs);
 })
+
+
+
+function setPlayerInfos(uuid, name, account_type){
+    document.getElementById('player_head').setAttribute('src', `https://mc-heads.net/head/${uuid}/60`);
+
+    document.getElementById('playersname').innerHTML = name;
+
+
+}

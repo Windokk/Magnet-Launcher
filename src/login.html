@@ -7,7 +7,7 @@
   </head>
   <body>
     <div class="topBar">
-      <img src="./icons/MagnetLogo.png" style="position: fixed; left: 0; margin: 8px;" width="30"/>
+      <img src="./icons/MagnetLogo3.png" style="position: fixed; left: 0; margin: 8px;" width="30"/>
       <div class="titleBarBtns" style="width: 100%; justify-content: flex-end;">
         <button id="minimizeBtn" class="topBtn minimizeBtn" title="Minimize"></button>
         <button id="maxResBtn" class="topBtn maximizeBtn" title="Maximize"></button>
@@ -16,9 +16,18 @@
     </div>
     <div class="contentContainer">
       <div class="centerContainer">
-        <h1 style="margin: auto; margin-bottom: 30px;">Login :</h1>
-        <div class="btncontainer"><button id="login_ms"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z" /><path fill="#81bc06" d="M12 1h10v10H12z" /><path fill="#05a6f0" d="M1 12h10v10H1z" /><path fill="#ffba08" d="M12 12h10v10H12z" /></svg>
-          <a style="margin-top: auto; margin-bottom: auto; margin-left: 10%; color: white;"><b>Microsoft Authentication</b></a></button>
+        <div style="display: none;" id="selectAccountContainer">
+          <h1 style="margin: auto; margin-bottom: 30px;">Select Account :</h1>
+          <div class="accountSelectionList" id="accountSelectionList">
+            
+          </div>
+        </div>
+        <div style="display: none; flex-direction: column;" id="loginContainer">
+          <h1 style="margin: auto; margin-bottom: 30px;">Login :</h1>
+          <div class="btncontainer"><button id="login_ms">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z" /><path fill="#81bc06" d="M12 1h10v10H12z" /><path fill="#05a6f0" d="M1 12h10v10H1z" /><path fill="#ffba08" d="M12 12h10v10H12z" /></svg>
+            <a style="margin-top: auto; margin-bottom: auto; margin-left: 10%; color: white;"><b>Microsoft Authentication</b></a></button>
+          </div>
         </div>
       </div>
     </div>
