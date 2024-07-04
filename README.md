@@ -4,6 +4,9 @@
 
 # Welcome to the Magnet Launcher !
 
+<p><i>Greatly inspired by the Helios launcher</i></p>
+
+<br>
 
 <img src="https://img.shields.io/static/v1?label=Build&message=Passing&color=brightgreen&logo=electron&logoColor=ffffff&style=for-the-badge"/>
 <br>
@@ -30,7 +33,9 @@ A Minecraft Java Launcher in JS built with Electron
 <div align="center">
 
 [![Discord](https://discord.com/api/guilds/1258045742220705852/widget.png?style=banner2)](https://discord.gg/qSXk8qA6Nw)
-  
+
+
+
 ## Screenshots
 
 <img src="./github/image.png" width="1030"/>
