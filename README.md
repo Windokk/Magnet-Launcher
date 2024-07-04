@@ -74,11 +74,10 @@ Clone the project
 
 (Or clone it from the same url with Github Desktop)
 
-Install Electron and Electron-builder
+Install Dependencies
 
 ```batch
-  npm install --save-dev electron
-  npm i --save-dev electron-builder
+  npm install
 ```
 
 Go to the project's scripts directory
@@ -90,7 +89,7 @@ Go to the project's scripts directory
 Run the build-and-run file
 
 ```batch
-  build-and-test.bat
+  ./build-and-test.bat
 ```
 
 This will build the installer and the packaged app, then run the packaged app.
@@ -98,13 +97,13 @@ This will build the installer and the packaged app, then run the packaged app.
 To only run the app :
 
 ```batch
-  build.bat
+  ./build.bat
 ```
 
 To only build the packaged app :
 
 ```batch
-  test.bat
+  ./test.bat
 ```
 
 ## Build and run locally (Linux)
