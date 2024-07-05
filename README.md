@@ -69,7 +69,7 @@ A Minecraft Java Launcher in JS built with Electron
 - [x]  Vanilla Config Installation (Automatic)
 - [x]  Game Launching
 - [x]  Login Page UI
-- [ ]  MS Account Login
+- [x]  MS Account Login
 - [ ]  Accounts Settings
 - [ ]  Skin Settings
 
