@@ -12,26 +12,27 @@ async function downloadAsset(hash, version,files_dl_dir) {
   filePath = path.join(files_dl_dir, "configs", version,"assets", "objects",assetsPath);
   
   
-  if(!fs.existsSync(path.join(filePath, hash))){
-
-    if (!fs.existsSync(filePath)){
+  if (!fs.existsSync(path.join(filePath, hash))) {
+    if (!fs.existsSync(filePath)) {
       fs.mkdirSync(filePath, { recursive: true });
     }
-    
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const buffer = await response.arrayBuffer();
       fs.writeFileSync(path.join(filePath, hash), Buffer.from(buffer));
-  
-      
+
     } catch (error) {
-      console.error('Download failed:', error, "filePath :", path.join(filePath,hash));
+      console.error('Download failed:', error, "filePath :", path.join(filePath, hash));
     }
   }
+
+  // Delay to control download speed
+  await new Promise(resolve => setTimeout(resolve, 20));
   
 }
 

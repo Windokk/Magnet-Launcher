@@ -116,9 +116,19 @@ function createWindow () {
     const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
     const jsonData = JSON.parse(fileContent);
     jsonData.current = index;
-    const jsonStringified = JSON.stringify(jsonData, null, 2);
-    fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'),jsonStringified);
+    fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'), JSON.stringify(jsonData, null, 2));
     win.webContents.send('sentInstalledConfigs', jsonData);
+  })
+
+  ipc.on('deleteConfig', (event, index) =>{
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    if(jsonData.current == index){
+      jsonData.current = -1;
+    }
+    jsonData.configs.splice(index, 1);
+    fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'),JSON.stringify(jsonData, null, 2));
+    win.webContents.send('deletedConfig', index);
   })
 
   ipc.on('getAvailableConfigs', () =>{

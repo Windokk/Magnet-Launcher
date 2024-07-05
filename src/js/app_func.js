@@ -669,12 +669,20 @@ ipc.on('sentInstalledConfigs', (event, jsonData) =>{
             selectBtnText.textContent = "Select";
             selectBtn.appendChild(selectBtnText);
 
+            const deleteBtn = document.createElement('div');
+            deleteBtn.className = "deleteConfigButton";
+            deleteBtn.addEventListener('click', () =>{
+                deleteConfig(index);
+            })
+            deleteBtn.innerHTML = `<img width=15 src="./icons/trash-solid.svg" alt="trash_icon">`;
+
             newDiv.setAttribute("index", index);
 
             // Set the text content of newDiv to item.version
             newDiv.appendChild(version_text);
 
             newDiv.appendChild(selectBtn);
+            newDiv.appendChild(deleteBtn);
             
             
     
@@ -729,6 +737,19 @@ ipc.on('sentInstalledConfigs', (event, jsonData) =>{
 function selectConfig(index){
     ipc.send('setSelectedConfig', index);
 }
+
+function deleteConfig(index){
+    ipc.send('deleteConfig', index);
+}
+
+ipc.on('deletedConfig', (event, index)=>{
+    const configDiv = document.getElementById('installedConfigsContainer');
+    for (let i = 0; i < configDiv.children.length; i++) {
+        if(configDiv.children[i].getAttribute('index')==`${index}`){
+            configDiv.removeChild(configDiv.children[i]);
+        }
+    }
+})
 
 function setSelectedConfigButton(configs, current){
     if(document.getElementById('mainLayout').style.display == "flex"){
@@ -877,7 +898,7 @@ document.getElementById('playButton').addEventListener('click',() =>{
     ipc.send('play', JVMArgs);
 })
 
-
+/// PLAYER INFOS
 
 function setPlayerInfos(uuid, name, account_type){
     document.getElementById('player_head').setAttribute('src', `https://mc-heads.net/head/${uuid}/60`);
@@ -886,3 +907,5 @@ function setPlayerInfos(uuid, name, account_type){
 
 
 }
+
+/// ACCOUNTS SETTINGS
