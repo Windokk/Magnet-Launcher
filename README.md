@@ -70,6 +70,8 @@ A Minecraft Java Launcher in JS built with Electron
 - [x]  Game Launching
 - [x]  Login Page UI
 - [x]  MS Account Login
+- [x]  Skins Settings
+- [x]  Skin Uploading (to Mojang)
 - [ ]  Accounts Settings
 - [ ]  Skin Settings
 
