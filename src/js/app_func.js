@@ -4,6 +4,11 @@ const path = require('path');
 const magnet_utils = require('./js/utils.js');
 const { version } = require('process');
 const fs = require('fs');
+const https = require('https');
+const FormData = require('form-data');
+const got = require('got');
+
+const {getSelectedAccessToken} = require('./js/accounts.js')
 
 const maxResBtn = document.getElementById('maxResBtn')
 const sidebar = document.getElementById('sidebar')
@@ -20,19 +25,16 @@ const ipc = ipcRenderer
 
 let Available_Vanilla_Configs;
 
+let skinViewer = undefined;
 
 showMainLayout();
 
+//We inform the main process that we have loaded the main launcher page
 ipc.send('loadedLauncherPage');
 
-ipc.on('PlayerInfos', (event, path) =>{
-    const fileContent = fs.readFileSync(path, 'utf-8');
-    const jsonData = JSON.parse(fileContent);
-    setPlayerInfos(jsonData.accounts[jsonData.selectedAccount].uuid, jsonData.accounts[jsonData.selectedAccount].displayName, jsonData.accounts[jsonData.selectedAccount].type);
+ipc.on('PlayerInfos', (event, launcherSettingsDir) =>{
+    setPlayerInfos(launcherSettingsDir);
 })
-
-
-
 
 let receivedDownloadFilesDir = "";
 
@@ -150,6 +152,7 @@ Account_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 
 })
 
@@ -163,6 +166,7 @@ Game_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 })
 
 Skin_btn.addEventListener('click', ()=>{
@@ -175,6 +179,9 @@ Skin_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
+    ipc.send('getSkins');
+
 })
 
 Mods_btn.addEventListener('click', ()=>{
@@ -187,6 +194,7 @@ Mods_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 })
 
 Configs_btn.addEventListener('click', async ()=>{
@@ -199,6 +207,7 @@ Configs_btn.addEventListener('click', async ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "flex";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 
     await magnet_utils.sleep(500);
     
@@ -215,6 +224,7 @@ Launcher_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "none";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 })
 
 About_btn.addEventListener('click', ()=>{
@@ -227,7 +237,142 @@ About_btn.addEventListener('click', ()=>{
     document.getElementById('aboutSettingsLayout').style.display = "flex";
     document.getElementById('configsSettingsLayout').style.display = "none";
     document.getElementById('configInstall').style.display = "none";
+    document.getElementById('skinAdd').style.display = "none";
 })
+
+/// SKIN SETTINGS ///
+
+document.getElementById('newSkin').addEventListener('click', () =>{
+    document.getElementById('skinAdd').style.display = "flex";
+    document.getElementById('skinSettingsLayout').style.display = "none";
+})
+
+document.getElementById('selectclassic').addEventListener('click', ()=>{
+    document.getElementById('typeSelector').innerHTML = "Classic";
+})
+
+document.getElementById('selectslim').addEventListener('click', ()=>{
+    document.getElementById('typeSelector').innerHTML = "Slim";
+})
+
+document.getElementById('skinPathSelectBtn').addEventListener('click', async () =>{
+    if(document.getElementById('typeSelector').innerHTML != "<i>Select a type</i>"){
+        type = document.getElementById('typeSelector').innerHTML;
+        if(document.getElementById('SkinName').value != ""){
+            skinname = document.getElementById('SkinName').getAttribute('value');
+            ipc.send('addnewSkin', type, skinname);
+        }
+        else{
+            ipc.send("error-skin-name");
+        }
+    }
+    else{
+        ipc.send("error-skin-type");
+    }
+})
+
+ipc.on('addedSkinPath', (event, selectedFile)=>{
+    path_ = selectedFile.replace(/\\/g, '/');
+    document.getElementById('skin_path').setAttribute('value',`${path_}`);
+})
+
+ipc.on('updated_skins', (event, jsonData) =>{
+    document.getElementById('skinSettingsLayout').style.display = "flex";
+    document.getElementById('skinAdd').style.display = "none";
+    document.getElementById('typeSelector').innerHTML = "<i>Select a type</i>";
+    document.getElementById('SkinName').value = "";
+    document.getElementById('skin_path').setAttribute('value',"none");
+    displaySkins(jsonData);
+    ipc.send('loadedLauncherPage');
+})
+
+document.getElementById('add-skin-button').addEventListener('click', () =>{
+    if(document.getElementById('skin_path').getAttribute('value') != "none" && document.getElementById('SkinName').value != ""){
+        type = document.getElementById('typeSelector').innerHTML;
+        skinname = document.getElementById('SkinName').value;
+        path_ = document.getElementById('skin_path').getAttribute('value');
+        ipc.send("addSkin", type, skinname, path_);
+    }
+})
+
+async function displaySkins(jsonData) {
+
+    document.getElementById('skins-grid-container').innerHTML = "";
+
+
+    
+    for (let i = 0; i <= jsonData.skins.length-1; i++) {
+        const skinBanner = document.createElement('div');
+        skinBanner.className = "skin-item";
+
+        skinName = document.createElement('p');
+        skinName.style = "color:white; margin-bottom:25px;";
+        skinName.innerHTML = `${jsonData.skins[i].name}`;
+
+        skinBanner.appendChild(skinName);
+
+        canvas = document.createElement('canvas');
+        canvas.setAttribute('id', `skin_container-${jsonData.skins[i].name}`);
+
+        skinBanner.appendChild(canvas);
+
+        const selectBtn = document.createElement('button');
+        selectBtn.style = "margin-left:auto; margin-right:auto; margin-top:15px;";
+        selectBtn.className = "add_install_btn";
+        selectBtn.innerHTML = 'Select Skin'
+        selectBtn.addEventListener('click', () =>{
+            ipc.send('uploadSkin', i, jsonData.skins[i].path, jsonData.skins[i].type);
+            
+        })
+
+        skinBanner.appendChild(selectBtn);
+
+
+        document.getElementById('skins-grid-container').appendChild(skinBanner); 
+
+        const skinViewer = new skinview3d.SkinViewer({
+            canvas: document.getElementById(`skin_container-${jsonData.skins[i].name}`),
+            width: 100,
+            height: 200,
+            skin: jsonData.skins[i].path
+        });
+        skinViewer.controls.enableZoom = false;
+        
+    }
+}
+
+ipc.on('uploadSkin', (event, launcherSettingsDir, path, type)=>{
+    accessToken = getSelectedAccessToken(launcherSettingsDir);
+    uploadSkinFile(accessToken, path, type);
+})
+
+async function uploadSkinFile(accessToken, file, variant) {
+    try {
+        const formData = new FormData();
+        formData.append('variant', variant); // Ensure variant is correct: "classic" or "slim"
+        formData.append('file', fs.createReadStream(file), {
+            filename: `${file.split('\\').pop()}`, // Adjust filename as needed
+            contentType: 'image/png' // Set correct content type
+        });
+
+        const response = await got.post('https://api.minecraftservices.com/minecraft/profile/skins', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                ...formData.getHeaders() // Set correct headers for multipart/form-data
+            },
+            body: formData
+        });
+
+        console.log('Skin uploaded successfully');
+    } catch (error) {
+        // Handle specific error cases
+        if (error.response && error.response.body) {
+            console.error('Upload failed:', error.response.body);
+        } else {
+            console.error('Upload failed:', error.message);
+        }
+    }
+}
 
 /// CONFIG SETTINGS ///
 
@@ -551,7 +696,7 @@ function selectVanillaVersion(fullVersion){
     if(!document.getElementById('installBtn')){
         InstallBtn = document.createElement('button');
         InstallBtn.setAttribute("id", "installBtn");
-        InstallBtn.className = "selectConfigButton";
+        InstallBtn.className = "add_install_btn";
         InstallBtn.textContent = "Install";
         InstallBtn.addEventListener('click', ()=>getVanillaInfosFromVersion(document.getElementById('versionSelector').textContent));
         document.getElementById('configInstall').appendChild(InstallBtn);
@@ -778,8 +923,8 @@ document.getElementById('fontawesome_link').addEventListener('click', () => {
     ipc.send("fontawesome_link");
 })
 
-document.getElementById('mcheads_link').addEventListener('click', () => {
-    ipc.send("mcheads_link");
+document.getElementById('skinview3d_link').addEventListener('click', () => {
+    ipc.send("skinview3d_link");
 })
 
 document.getElementById('complementary_link').addEventListener('click', () => {
@@ -900,12 +1045,58 @@ document.getElementById('playButton').addEventListener('click',() =>{
 
 /// PLAYER INFOS
 
-function setPlayerInfos(uuid, name, account_type){
-    document.getElementById('player_head').setAttribute('src', `https://mc-heads.net/head/${uuid}/60`);
-
-    document.getElementById('playersname').innerHTML = name;
+function setPlayerInfos(launcherSettingsDir){
 
 
+    let accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+    let accountsjsonData = JSON.parse(accountsfileContent);
+
+    document.getElementById('playersname').innerHTML = accountsjsonData.accounts[accountsjsonData.selectedAccount].displayName;
+
+    let skinsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+    let skinsjsonData = JSON.parse(skinsfileContent);
+
+    const skinPath = skinsjsonData.skins[skinsjsonData.selected].path;
+
+    skinViewer = new skinview3d.SkinViewer({
+        canvas: document.getElementById('player_head'),
+        width: 100,
+        height: 100,
+        renderPaused: true  // Ensure rendering is paused for setup
+    });
+
+    skinViewer.controls.enableRotate = false;
+    skinViewer.controls.enableZoom = false;
+    skinViewer.zoom = 2;
+
+    // Make body parts invisible
+    skinViewer.playerObject.skin.body.innerLayer.visible = false;
+    skinViewer.playerObject.skin.body.outerLayer.visible = false;
+    skinViewer.playerObject.skin.rightArm.innerLayer.visible = false;
+    skinViewer.playerObject.skin.rightArm.outerLayer.visible = false;
+    skinViewer.playerObject.skin.leftArm.innerLayer.visible = false;
+    skinViewer.playerObject.skin.leftArm.outerLayer.visible = false;
+    skinViewer.playerObject.skin.rightLeg.innerLayer.visible = false;
+    skinViewer.playerObject.skin.rightLeg.outerLayer.visible = false;
+    skinViewer.playerObject.skin.leftLeg.innerLayer.visible = false;
+    skinViewer.playerObject.skin.leftLeg.outerLayer.visible = false;
+
+    // Load the skin and render
+    (async function () {
+        await skinViewer.loadSkin(skinPath)
+        skinViewer.playerObject.skin.head.rotation.x = 0.3;
+        skinViewer.playerObject.skin.head.rotation.y = 0.8;
+        skinViewer.playerObject.skin.head.position.y = -11.5;
+        skinViewer.playerObject.skin.head.position.y = -11.5;
+        skinViewer.render();
+    })();
+
+    function animate() {
+        requestAnimationFrame(animate);
+        skinViewer.render();
+    }
+
+    animate();
 }
 
 /// ACCOUNTS SETTINGS

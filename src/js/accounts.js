@@ -40,4 +40,10 @@ function updateMicrosoftAuthAccount(uuid, accessToken, msAccessToken, msRefreshT
     return jsonData.accounts[uuid];
 }
 
-module.exports = { addMicrosoftAuthAccount, updateMicrosoftAuthAccount };
+function getSelectedAccessToken(launcherSettingsDir){
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    return jsonData.accounts[jsonData.selectedAccount].accessToken;
+}
+
+module.exports = { addMicrosoftAuthAccount, updateMicrosoftAuthAccount, getSelectedAccessToken };

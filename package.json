@@ -38,9 +38,11 @@
   "devDependencies": {
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "skinview3d": "^3.0.1"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "skinview3d": "^3.0.1"
   }
 }

@@ -4,6 +4,8 @@
     <title>Magnet Launcher</title>
     <link rel="stylesheet" href="styles/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../node_modules/skinview3d/bundles/skinview3d.bundle.js"></script>
+    <script src="../node_modules/skinview3d/node_modules/three/build/three.min.js"></script>
     <script defer src="js/app_func.js"></script>
   </head>
   <body>
@@ -38,7 +40,7 @@
           </div>
           <div class="mainLayout" id="mainLayout">
             <div class="mainLayoutTop">
-              <div class="imgContainer"><img alt="player_head" id="player_head" src=""></div>
+              <div class="imgContainer"><canvas id="player_head"></canvas></div>
               <h2 style="margin-left: 10px;margin-top: 30px; margin-bottom: auto; text-shadow: 0px 0px 13px rgb(31, 31, 31);"><b id="playersname"></b></h2>
             </div>
             <div class="mainLayoutMiddle"></div>
@@ -51,7 +53,7 @@
               <div class="bottomMiddlePart">
                 <button class="playButton" id="playButton">
                   <img src="./icons/play.png" alt="play_icon" width="50%">
-              </button>
+                </button>
               </div>
               <div style="height:50%;" class="line-vertical"></div>
               <div class="bottomRightPart">
@@ -86,14 +88,46 @@
                   </div>
                   <input class="FileSelVal" id="java_path" type="text" value="none" disabled/>
                   <button class="FileSelButton" select-type="java">Select javaw.exe</button>
-              </div>
+                </div>
               <p style="margin-top: 4px; margin-left: 5px; margin-bottom:10px;">(Path should end with : bin/javaw.exe)</p>
                 <div style="display: flex; flex-direction: row; align-items: center;">
                   <p style="margin-right: 2%;">JVM Arguments</p>
                   <input type="text" class="text_input" id="JVMArgs" value="-Xmx2G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M" placeholder="Enter JVM Additional Arguments" required="" />
                 </div>
               </div>
-              <div class="skinSettings" id="skinSettingsLayout"></div>
+              <div class="skinAdd" id="skinAdd">
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Add New Skin</h1>
+                <h2 style="margin: 5px;">Type :</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="dropdown">
+                  <button class="dropbtn" id="typeSelector"><i>Select a type</i></button>
+                  <div class="dropdown-content">
+                    <a id="selectclassic">Classic</a>
+                    <a id="selectslim">Slim</a>
+                  </div>
+                </div>
+                <h2 style="margin: 5px;">Name :</h2>
+                <div class="line" style="width:95%;"></div>
+                <input type="text" style="margin-top: 10px; margin-left: 20px;" class="text_input" id="SkinName" value="" placeholder="My Skin Name" required="" />
+                <h2 style="margin: 5px;">Path :</h2>
+                <div class="line" style="width:95%;"></div>
+                <div class="FileSelActions" style="margin-top: 20px; margin-left: 20px;">
+                  <div class="FileSelIcon">
+                    <svg width="23px" height="23px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
+                  </div>
+                  <input class="FileSelVal" id="skin_path" type="text" value="none" disabled/>
+                  <button class="FileSelButton" id="skinPathSelectBtn">Select skin (png)</button>
+                </div>
+                <button class="add_install_btn" id="add-skin-button" style="margin-top: 50px;">Add Skin</button>
+
+              </div>
+              <div class="skinSettings" id="skinSettingsLayout">
+                <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Skin Settings</h1>
+                <button class="newSkinBtn" id="newSkin">New Skin</button>
+                <div class="skins-grid-container" id="skins-grid-container">
+                  
+                </div>
+              </div>
               <div class="modsSettings" id="modsSettingsLayout"></div>
               <div class="configInstall" id="configInstall">
                 <h1 style="text-decoration: underline; margin-left: auto; margin-right: auto;">Install New Configuration</h1>
@@ -169,7 +203,7 @@
                 <div class="line" style="width:95%;"></div>
                 <p style="margin-bottom: 0;" id="electron_link">Electron (Framework)</a>
                 <p style="margin-bottom: 0;" id="fontawesome_link">Font Awesome (Icons)</a>
-                <p style="margin-bottom: 0;" id="mcheads_link">MC-Heads (Skins getter)</a>
+                <p style="margin-bottom: 0;" id="skinview3d_link">Skin View 3D (Skins 3D Viewer)</a>
                 <p style="margin-bottom: 0;" id="complementary_link">Complementary Shaders (Backgrounds)</a>
                 <p style="margin-bottom: 2%;" id="icons8_link">Icons8 (Some Icons)</a>
                 <h2 style="margin: 5px;">❤️ Special THX to :</h2>

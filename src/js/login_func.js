@@ -205,11 +205,12 @@ async function addMicrosoftAccount(authCode) {
 }
 
 async function validateSelectedMicrosoftAccount(){
-    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir_,'accounts.json'), 'utf-8');
     const jsonData = JSON.parse(fileContent);
     const current = jsonData.accounts[jsonData.selectedAccount];
     const now = new Date().getTime()
     const mcExpiresAt = current.expiresAt
+
     const mcExpired = now >= mcExpiresAt
 
     if(!mcExpired) {
@@ -243,7 +244,7 @@ async function validateSelectedMicrosoftAccount(){
         // Only MC expired, use existing MS token.
         try {
             const res = await fullMicrosoftAuthFlow(current.microsoft.access_token, AUTH_MODE.MC_REFRESH)
-
+            
             updateMicrosoftAuthAccount(
                 current.uuid,
                 res.mcToken.access_token,
@@ -267,7 +268,7 @@ function checkForSelectedAccount(){
 
     //One account is selected
     if(jsonData.selectedAccount != ""){
-        if(validateSelectedMicrosoftAccount){
+        if(validateSelectedMicrosoftAccount()){
             ipc.send('loadLauncherPage');
         }
         else{

@@ -71,7 +71,7 @@ function createWindow () {
   })
 
   ipc.on('loadedLauncherPage', () =>{
-    win.webContents.send('PlayerInfos', path.join(launcherSettingsDir,'accounts.json'));
+    win.webContents.send('PlayerInfos', launcherSettingsDir);
   })
 
   //// MINIMIZE APP
@@ -118,6 +118,7 @@ function createWindow () {
     jsonData.current = index;
     fs.writeFileSync(path.join(launcherSettingsDir, 'configs.json'), JSON.stringify(jsonData, null, 2));
     win.webContents.send('sentInstalledConfigs', jsonData);
+    
   })
 
   ipc.on('deleteConfig', (event, index) =>{
@@ -273,7 +274,6 @@ function createWindow () {
 
     if (!result.canceled) {
       const selectedFile = result.filePaths[0];
-      const path = require('path');
 
       // Check if the selected file's path ends with "bin/javaw.exe"
       const expectedSuffix = path.join('bin', 'javaw.exe').replace(/\\/g, '/'); // Use forward slashes for consistency
@@ -297,14 +297,74 @@ function createWindow () {
 
   })
 
+  // SKIN SELECTION
+
+  ipc.on('addnewSkin', async (event, type_, name_) =>{
+    const result = await dialog.showOpenDialog(win, {
+      title:"Select Skin file",
+      properties: ['openFile'],
+      filters:[{ name: 'Image', extensions: ['png'] }]
+    })
+
+    if (!result.canceled) {
+      const selectedFile = result.filePaths[0];
+      win.webContents.send('addedSkinPath', selectedFile);
+    }
+  })
+
+  ipc.on('error-skin-name', async () =>{
+    await dialog.showMessageBox(win, {
+      type: 'error',
+      title: 'Invalid Skin Name',
+      message: 'Please type in a valid skin name.'
+    });
+  })
+
+  ipc.on('error-skin-type', async () =>{
+    await dialog.showMessageBox(win, {
+      type: 'error',
+      title: 'Invalid Skin type',
+      message: 'Please select a skin type'
+    });
+  })
+
+  ipc.on('addSkin', (event, type_, name_, path_)=>{
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+    fs.copyFileSync(path_, path.join(launcherSettingsDir, path_.split('/').pop()));
+    const jsonData = JSON.parse(fileContent);
 
 
+    jsonData.skins.push({
+      name:name_,
+      type: type_ == "Classic" ? "classic" : "slim",
+      path:path.join(launcherSettingsDir, path_.split('/').pop())
+    })
+    jsonData.selected = jsonData.skins.length - 1;
+    fs.writeFileSync(path.join(launcherSettingsDir,'skins.json'), JSON.stringify(jsonData, null, 2));
+    win.webContents.send('updated_skins', jsonData);
+  })
+
+  ipc.on('getSkins', ()=>{
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    win.webContents.send('updated_skins', jsonData);
+  })
 
 
   ipc.on('play', (event, args) =>{
     
     play(args);
   })
+
+  ipc.on('uploadSkin', (event, i, path_, type)=>{
+    win.webContents.send('uploadSkin', launcherSettingsDir, path_, type);
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    jsonData.selected = i;
+    fs.writeFileSync(path.join(launcherSettingsDir,'skins.json'), JSON.stringify(jsonData, null, 2));
+    win.webContents.send('PlayerInfos', launcherSettingsDir);
+  })  
+
 
 }
 
@@ -357,8 +417,8 @@ ipc.on('fontawesome_link', () =>{
   require('electron').shell.openExternal("https://fontawesome.com/")
 });
 
-ipc.on('mcheads_link', () =>{
-  require('electron').shell.openExternal("https://mc-heads.net/")
+ipc.on('skinview3d_link', () =>{
+  require('electron').shell.openExternal("https://github.com/bs-community/skinview3d/tree/master")
 });
 
 ipc.on('complementary_link', () =>{
