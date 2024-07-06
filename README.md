@@ -73,7 +73,6 @@ A Minecraft Java Launcher in JS built with Electron
 - [x]  Skins Settings
 - [x]  Skin Uploading (to Mojang)
 - [ ]  Accounts Settings
-- [ ]  Skin Settings
 
 ## Build and run locally (Windows)
 
