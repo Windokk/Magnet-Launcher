@@ -1045,58 +1045,155 @@ document.getElementById('playButton').addEventListener('click',() =>{
 
 /// PLAYER INFOS
 
-function setPlayerInfos(launcherSettingsDir){
+async function setPlayerInfos(launcherSettingsDir){
 
 
-    let accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
-    let accountsjsonData = JSON.parse(accountsfileContent);
+    if(fs.existsSync(path.join(launcherSettingsDir,'accounts.json'))){
 
-    document.getElementById('playersname').innerHTML = accountsjsonData.accounts[accountsjsonData.selectedAccount].displayName;
+        let accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+        let accountsjsonData = JSON.parse(accountsfileContent);
 
-    let skinsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
-    let skinsjsonData = JSON.parse(skinsfileContent);
-
-    const skinPath = skinsjsonData.skins[skinsjsonData.selected].path;
-
-    skinViewer = new skinview3d.SkinViewer({
-        canvas: document.getElementById('player_head'),
-        width: 100,
-        height: 100,
-        renderPaused: true  // Ensure rendering is paused for setup
-    });
-
-    skinViewer.controls.enableRotate = false;
-    skinViewer.controls.enableZoom = false;
-    skinViewer.zoom = 2;
-
-    // Make body parts invisible
-    skinViewer.playerObject.skin.body.innerLayer.visible = false;
-    skinViewer.playerObject.skin.body.outerLayer.visible = false;
-    skinViewer.playerObject.skin.rightArm.innerLayer.visible = false;
-    skinViewer.playerObject.skin.rightArm.outerLayer.visible = false;
-    skinViewer.playerObject.skin.leftArm.innerLayer.visible = false;
-    skinViewer.playerObject.skin.leftArm.outerLayer.visible = false;
-    skinViewer.playerObject.skin.rightLeg.innerLayer.visible = false;
-    skinViewer.playerObject.skin.rightLeg.outerLayer.visible = false;
-    skinViewer.playerObject.skin.leftLeg.innerLayer.visible = false;
-    skinViewer.playerObject.skin.leftLeg.outerLayer.visible = false;
-
-    // Load the skin and render
-    (async function () {
-        await skinViewer.loadSkin(skinPath)
-        skinViewer.playerObject.skin.head.rotation.x = 0.3;
-        skinViewer.playerObject.skin.head.rotation.y = 0.8;
-        skinViewer.playerObject.skin.head.position.y = -11.5;
-        skinViewer.playerObject.skin.head.position.y = -11.5;
-        skinViewer.render();
-    })();
-
-    function animate() {
-        requestAnimationFrame(animate);
-        skinViewer.render();
+        if(accountsjsonData.selectedAccount != ""){
+            if(Object.keys(accountsjsonData.accounts).includes(accountsjsonData.selectedAccount)){
+                document.getElementById('playersname').innerHTML = accountsjsonData.accounts[accountsjsonData.selectedAccount].displayName;
+            }
+        }
     }
 
-    animate();
+    if(fs.existsSync(path.join(launcherSettingsDir,'skins.json'))){
+        let skinsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+        let skinsjsonData = JSON.parse(skinsfileContent);
+
+        if(0 <= skinsjsonData.selected <= skinsjsonData.skins.length-1){
+            const skinPath = skinsjsonData.skins[skinsjsonData.selected].path;
+
+            skinViewer = new skinview3d.SkinViewer({
+                canvas: document.getElementById('player_head'),
+                width: 100,
+                height: 100,
+                renderPaused: true  // Ensure rendering is paused for setup
+            });
+
+            skinViewer.controls.enableRotate = false;
+            skinViewer.controls.enableZoom = false;
+            skinViewer.zoom = 2;
+
+            // Make body parts invisible
+            skinViewer.playerObject.skin.body.innerLayer.visible = false;
+            skinViewer.playerObject.skin.body.outerLayer.visible = false;
+            skinViewer.playerObject.skin.rightArm.innerLayer.visible = false;
+            skinViewer.playerObject.skin.rightArm.outerLayer.visible = false;
+            skinViewer.playerObject.skin.leftArm.innerLayer.visible = false;
+            skinViewer.playerObject.skin.leftArm.outerLayer.visible = false;
+            skinViewer.playerObject.skin.rightLeg.innerLayer.visible = false;
+            skinViewer.playerObject.skin.rightLeg.outerLayer.visible = false;
+            skinViewer.playerObject.skin.leftLeg.innerLayer.visible = false;
+            skinViewer.playerObject.skin.leftLeg.outerLayer.visible = false;
+
+            // Load the skin and render
+            (async function () {
+                await skinViewer.loadSkin(skinPath)
+                skinViewer.playerObject.skin.head.rotation.x = 0.3;
+                skinViewer.playerObject.skin.head.rotation.y = 0.8;
+                skinViewer.playerObject.skin.head.position.y = -11.5;
+                skinViewer.playerObject.skin.head.position.y = -11.5;
+                skinViewer.render();
+            })();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                skinViewer.render();
+            }
+
+            animate();
+        }
+        else{
+            if(fs.existsSync(path.join(launcherSettingsDir,'accounts.json'))){
+                let accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+                let accountsjsonData = JSON.parse(accountsfileContent);
+
+                if(accountsjsonData.selectedAccount != ""){
+                    if(Object.keys(accountsjsonData.accounts).includes(accountsjsonData.selectedAccount)){
+                        uuid = accountsjsonData.accounts[accountsjsonData.selectedAccount].uuid;
+                        skinPath = await getSkinPath(uuid, launcherSettingsDir);
+                        skinViewer = new skinview3d.SkinViewer({
+                            canvas: document.getElementById('player_head'),
+                            width: 100,
+                            height: 100,
+                            renderPaused: true  // Ensure rendering is paused for setup
+                        });
+            
+                        skinViewer.controls.enableRotate = false;
+                        skinViewer.controls.enableZoom = false;
+                        skinViewer.zoom = 2;
+            
+                        // Make body parts invisible
+                        skinViewer.playerObject.skin.body.innerLayer.visible = false;
+                        skinViewer.playerObject.skin.body.outerLayer.visible = false;
+                        skinViewer.playerObject.skin.rightArm.innerLayer.visible = false;
+                        skinViewer.playerObject.skin.rightArm.outerLayer.visible = false;
+                        skinViewer.playerObject.skin.leftArm.innerLayer.visible = false;
+                        skinViewer.playerObject.skin.leftArm.outerLayer.visible = false;
+                        skinViewer.playerObject.skin.rightLeg.innerLayer.visible = false;
+                        skinViewer.playerObject.skin.rightLeg.outerLayer.visible = false;
+                        skinViewer.playerObject.skin.leftLeg.innerLayer.visible = false;
+                        skinViewer.playerObject.skin.leftLeg.outerLayer.visible = false;
+            
+                        // Load the skin and render
+                        (async function () {
+                            await skinViewer.loadSkin(skinPath)
+                            skinViewer.playerObject.skin.head.rotation.x = 0.3;
+                            skinViewer.playerObject.skin.head.rotation.y = 0.8;
+                            skinViewer.playerObject.skin.head.position.y = -11.5;
+                            skinViewer.playerObject.skin.head.position.y = -11.5;
+                            skinViewer.render();
+                        })();
+            
+                        function animate() {
+                            requestAnimationFrame(animate);
+                            skinViewer.render();
+                        }
+            
+                        animate();
+                    } 
+                }
+            }
+        }
+        
+    }
+    
 }
+
+async function getSkinPath(uuid, launcherSettingsDir){
+    const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    textureDataB64 = data['properties'][0]['value'];
+    textureDataStr = atob(textureDataB64);
+    textureURL = JSON.parse(textureDataStr).textures.SKIN.url;
+    filePath = path.join(launcherSettingsDir, 'current.png');
+
+    if(!fs.existsSync(filePath)){
+        try {
+            const response = await fetch(textureURL);
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+      
+            const buffer = await response.arrayBuffer();
+            fs.writeFileSync(filePath, Buffer.from(buffer));
+            return filePath;
+      
+        } catch (error) {
+            console.error('Current skin download failed:', error);
+        }
+    }else{
+        return filePath;
+    }
+    
+}
+
 
 /// ACCOUNTS SETTINGS

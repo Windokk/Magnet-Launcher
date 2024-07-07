@@ -1,7 +1,4 @@
 node_modules
 dist/
 launcher-settings/*.json
-launcher-settings/launcher.json
-launcher-settings/configs.json
-launcher-settings/accounts.json
-launcher-settings/skins.json
+launcher-settings/*.png

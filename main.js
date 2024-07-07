@@ -409,6 +409,32 @@ function createConfigsFile(){
   }
 }
 
+function createAccountsFile(){
+  if (!fs.existsSync(path.join(launcherSettingsDir, 'accounts.json'))) {
+    const data = {
+      "selectedAccount": "",
+      "accounts":{
+
+      }
+    };
+    const jsonData = JSON.stringify(data, null, 2);
+    fs.writeFileSync(path.join(launcherSettingsDir, 'accounts.json'),jsonData);
+  }
+}
+
+function createSkinsFile(){
+  if (!fs.existsSync(path.join(launcherSettingsDir, 'skins.json'))) {
+    const data = {
+      "selected":-1,
+      "skins":[
+
+      ]
+    };
+    const jsonData = JSON.stringify(data, null, 2);
+    fs.writeFileSync(path.join(launcherSettingsDir, 'skins.json'),jsonData);
+  }
+}
+
 ipc.on('electron_link', () =>{
   require('electron').shell.openExternal("https://www.electronjs.org/")
 });
@@ -556,6 +582,8 @@ app.whenReady().then(() => {
   createSettingsDir();
   createSettingsFile();
   createConfigsFile();
+  createSkinsFile();
+  createAccountsFile();
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
