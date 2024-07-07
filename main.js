@@ -350,12 +350,6 @@ function createWindow () {
     win.webContents.send('updated_skins', jsonData);
   })
 
-
-  ipc.on('play', (event, args) =>{
-    
-    play(args);
-  })
-
   ipc.on('uploadSkin', (event, i, path_, type)=>{
     win.webContents.send('uploadSkin', launcherSettingsDir, path_, type);
     const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
@@ -365,6 +359,23 @@ function createWindow () {
     win.webContents.send('PlayerInfos', launcherSettingsDir);
   })  
 
+  ipc.on('deleteSkin', (event, index) =>{
+    const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'skins.json'), 'utf-8');
+    const jsonData = JSON.parse(fileContent);
+    jsonData.selected = -1;
+    jsonData.skins.splice(index, 1);
+    fs.writeFileSync(path.join(launcherSettingsDir,'skins.json'), JSON.stringify(jsonData, null, 2));
+    win.webContents.send('updated_skins', jsonData);
+  })
+
+  //Play
+
+  ipc.on('play', (event, args) =>{
+    
+    play(args);
+  })
+
+  
 
 }
 

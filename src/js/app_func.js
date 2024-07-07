@@ -138,6 +138,8 @@ document.getElementById('closeSettingsBtn').addEventListener('click', () =>{
     if(document.getElementById("rightPart").style.marginLeft == "200px"){
         document.getElementById('showHideMenus').click();
     }
+    
+    ipc.send('loadedLauncherPage');
 })
 
 /// SETTINGS BUTTONS
@@ -299,11 +301,21 @@ async function displaySkins(jsonData) {
 
     document.getElementById('skins-grid-container').innerHTML = "";
 
-
-    
     for (let i = 0; i <= jsonData.skins.length-1; i++) {
         const skinBanner = document.createElement('div');
         skinBanner.className = "skin-item";
+
+        deleteBtn = document.createElement('button');
+        deleteBtnIcon = document.createElement('img');
+        deleteBtnIcon.setAttribute('src', "./icons/close.svg");
+        deleteBtnIcon.setAttribute('width',"15px");
+        deleteBtn.appendChild(deleteBtnIcon);
+        deleteBtn.className = "deleteSkinBtn";
+        deleteBtn.addEventListener('click', () =>{
+            ipc.send('deleteSkin', i);
+        })
+
+        skinBanner.appendChild(deleteBtn);
 
         skinName = document.createElement('p');
         skinName.style = "color:white; margin-bottom:25px;";
@@ -1047,7 +1059,6 @@ document.getElementById('playButton').addEventListener('click',() =>{
 
 async function setPlayerInfos(launcherSettingsDir){
 
-
     if(fs.existsSync(path.join(launcherSettingsDir,'accounts.json'))){
 
         let accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
@@ -1114,8 +1125,12 @@ async function setPlayerInfos(launcherSettingsDir){
 
                 if(accountsjsonData.selectedAccount != ""){
                     if(Object.keys(accountsjsonData.accounts).includes(accountsjsonData.selectedAccount)){
+                        
                         uuid = accountsjsonData.accounts[accountsjsonData.selectedAccount].uuid;
                         skinPath = await getSkinPath(uuid, launcherSettingsDir);
+
+                        
+
                         skinViewer = new skinview3d.SkinViewer({
                             canvas: document.getElementById('player_head'),
                             width: 100,
@@ -1175,22 +1190,18 @@ async function getSkinPath(uuid, launcherSettingsDir){
     textureURL = JSON.parse(textureDataStr).textures.SKIN.url;
     filePath = path.join(launcherSettingsDir, 'current.png');
 
-    if(!fs.existsSync(filePath)){
-        try {
-            const response = await fetch(textureURL);
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-      
-            const buffer = await response.arrayBuffer();
-            fs.writeFileSync(filePath, Buffer.from(buffer));
-            return filePath;
-      
-        } catch (error) {
-            console.error('Current skin download failed:', error);
+    fs.rmSync(filePath);
+
+    try {
+        const response = await fetch(textureURL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    }else{
+        const buffer = await response.arrayBuffer();
+        fs.writeFileSync(filePath, Buffer.from(buffer));
         return filePath;
+    } catch (error) {
+        console.error('Current skin download failed:', error);
     }
     
 }

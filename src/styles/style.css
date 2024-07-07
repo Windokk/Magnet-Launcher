@@ -478,18 +478,6 @@ h3{
     overflow-y: auto;
 }
 
-/* SKINS */
-
-.skins-grid-container {
-    
-    display: grid;
-    grid-template-columns: repeat(3, 200px);
-    gap: 10px;
-    max-height: 100vh;
-    overflow-y: auto;
-    padding: 10px;
-}
-
 
 .skin-item {
     width: 200px;
@@ -548,7 +536,17 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* SKIN */
+/* SKINS */
+
+.skins-grid-container {
+    
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    gap: 10px;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 10px;
+}
 
 .skinSettings{
     display: none;
@@ -651,6 +649,28 @@ input::-webkit-inner-spin-button {
 .skinAdd > .dropdown:hover .dropbtn {
     transition: 0.4s;
     background-color: #555555;
+}
+
+.deleteSkinBtn{
+    border: transparent;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: transparent;
+    display: flex;
+    margin-left: 80%;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    transform: scale(1);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.deleteSkinBtn:hover{
+    transform: scale(1.2);
+    transition: 0.3s;
+    background-color: #5e0c0c;
 }
 
 /* MODS */
