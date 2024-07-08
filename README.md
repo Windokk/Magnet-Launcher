@@ -46,6 +46,10 @@ A Minecraft Java Launcher in JS built with Electron
   </div>
 </div>
 
+## Supported Platforms
+
+
+
 ## User documentation
 
 *In Progress*
