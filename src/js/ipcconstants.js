@@ -1,7 +1,6 @@
 
 exports.AZURE_CLIENT_ID = '59b8c37a-065d-496f-8b24-2cf79e09bb07'
 
-
 // Opcodes
 exports.MSFT_OPCODE = {
     OPEN_LOGIN: 'MSFT_AUTH_OPEN_LOGIN',

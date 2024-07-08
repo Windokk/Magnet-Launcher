@@ -721,9 +721,10 @@ function selectVanillaVersion(fullVersion){
 function getVanillaInfosFromVersion(fullVersion){
     let parts = fullVersion.split('-');
     let type_ = parts[0];
-    let version_ = parts[1];
+    version_ = fullVersion.replace(type_+"-", "");
 
     if (type_=="release"){
+        
         const filteredVersion = Available_Vanilla_Configs.versions.find(version => version.type === type_ && version.id === version_);
         
         if (filteredVersion) {

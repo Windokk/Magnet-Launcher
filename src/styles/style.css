@@ -1219,20 +1219,12 @@ input:checked + .slider:before {
     width: 100%;
 }
 
-.btncontainer {
+.btnlogin{
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    margin-bottom: 10%;
-}
-
-.btncontainer button{
-    width: 100%;
-    display: flex;
     flex-direction: row;
+    margin-bottom: 10%;
     margin: auto;
     justify-content: center;
     align-items: center;
@@ -1245,7 +1237,7 @@ input:checked + .slider:before {
     
 }
 
-.btncontainer button:hover{
+.btnlogin:hover{
     box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.1), 0 0 15px 10px rgba(255, 255, 255, 0.08), 0 0 20px 15px rgba(255, 255, 255, 0.03);
     transition: .2s;
 }

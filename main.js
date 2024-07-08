@@ -482,6 +482,7 @@ let msftAuthSuccess
 let msftAuthViewSuccess
 let msftAuthViewOnClose
 ipc.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
+    
     if (msftAuthWindow) {
         ipcEvent.reply(MSFT_OPCODE.REPLY_LOGIN, MSFT_REPLY_TYPE.ERROR, MSFT_ERROR.ALREADY_OPEN, msftAuthViewOnClose, launcherSettingsDir)
         return
@@ -621,15 +622,17 @@ async function play(JVM_ARGS){
   const launcherjsonData = JSON.parse(launcherfileContent);
   const configsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'configs.json'), 'utf-8');
   const configsjsonData = JSON.parse(configsfileContent);
+  const accountsfileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
+  const accountsjsonData = JSON.parse(accountsfileContent);
 
   const versionFilejsonData = await fetchVanillaDataFromURL(configsjsonData.configs[configsjsonData.current].index, configsjsonData.configs[configsjsonData.current].url, launcherjsonData.downloadsDir);
 
   //User's data : 
-  const accessToken = "";
-  const username = "";
-  const UUID = "";
-  const clientID = "";
-  const XUID = "";
+  const accessToken = accountsjsonData.accounts[accountsjsonData.selectedAccount].accessToken;
+  const username = accountsjsonData.accounts[accountsjsonData.selectedAccount].displayName;
+  const UUID = accountsjsonData.accounts[accountsjsonData.selectedAccount].uuid;
+  const clientID = "MDkwYzYwOWItYjhkMC00YTAwLTkxOTEtYjljYzU0NDY2ZDlm";
+  const XUID = accountsjsonData.accounts[accountsjsonData.selectedAccount].xuid;
 
 
   JAVA_EXEC = launcherjsonData.javawPath;
@@ -640,7 +643,7 @@ async function play(JVM_ARGS){
   CLASSPATH =  versionFilejsonData.classpath;
   GAME_ARGS = `net.minecraft.client.main.Main --username ${username} --version ${configsjsonData.configs[configsjsonData.current].version} --gameDir ${launcherjsonData.downloadsDir} --assetsDir ${path.join(launcherjsonData.downloadsDir, "/configs/", configsjsonData.configs[configsjsonData.current].version,"/assets")} --assetIndex ${versionFilejsonData.asset_index} --uuid ${UUID} --accessToken ${accessToken} --clientId ${clientID} --xuid ${XUID} --userType msa --versionType ${configsjsonData.configs[configsjsonData.current].type}`;
 
-  command = `${JAVA_EXEC} ${HEAP_DUMP_PATH} ${OS_NAME} ${OS_VERSION} ${JAVA_OPTIONS} ${CLASSPATH} ${JVM_ARGS} ${GAME_ARGS}`
+  command = `"${JAVA_EXEC}" ${HEAP_DUMP_PATH} ${OS_NAME} ${OS_VERSION} ${JAVA_OPTIONS} ${CLASSPATH} ${JVM_ARGS} ${GAME_ARGS}`
 
 
   

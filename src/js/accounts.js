@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function addMicrosoftAuthAccount(uuid, accessToken, name, mcExpires, msAccessToken, msRefreshToken, msExpires, launcherSettingsDir) {
+function addMicrosoftAuthAccount(uuid, xuid, accessToken, name, mcExpires, msAccessToken, msRefreshToken, msExpires, launcherSettingsDir) {
 
     const fileContent = fs.readFileSync(path.join(launcherSettingsDir,'accounts.json'), 'utf-8');
     const jsonData = JSON.parse(fileContent);
@@ -14,6 +14,7 @@ function addMicrosoftAuthAccount(uuid, accessToken, name, mcExpires, msAccessTok
         uuid: uuid.trim(),
         displayName: name.trim(),
         expiresAt: mcExpires,
+        xuid: xuid,
         microsoft: {
             access_token: msAccessToken,
             refresh_token: msRefreshToken,

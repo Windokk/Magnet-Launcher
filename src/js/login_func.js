@@ -1,7 +1,6 @@
 const { ipcRenderer } = require('electron')
 const maxResBtn = document.getElementById('maxResBtn')
 const ipc = ipcRenderer
-const loginMicrosoft = document.getElementById('login_ms')
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./js/ipcconstants')
 const { MicrosoftAuth, RestResponseStatus } = require('./js/ms_auth');
 const { addMicrosoftAuthAccount, updateMicrosoftAuthAccount } = require('./js/accounts')
@@ -54,12 +53,22 @@ closeBtn.addEventListener('click', ()=>{
 let loginOptionsViewOnLoginSuccess;
 let loginOptionsViewOnLoginCancel;
 
-loginMicrosoft.addEventListener('click', () => {
+document.getElementById('login_ms').addEventListener('click', () => {
     ipc.send(
             MSFT_OPCODE.OPEN_LOGIN,
             loginOptionsViewOnLoginSuccess,
             loginOptionsViewOnLoginCancel
-        )
+    );
+    
+})
+
+document.getElementById('add_login_ms').addEventListener('click', () => {
+    ipc.send(
+            MSFT_OPCODE.OPEN_LOGIN,
+            loginOptionsViewOnLoginSuccess,
+            loginOptionsViewOnLoginCancel
+    );
+    
 })
 
 ipc.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
@@ -94,7 +103,8 @@ ipc.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
 
             const authCode = queryMap.code
             addMicrosoftAccount(authCode).then(value => {
-                ipc.send('loadLauncherPage');
+                /*
+                ipc.send('loadLauncherPage');*/
             }).catch((displayableError) => {
                 console.log(displayableError);
             }) 
@@ -153,11 +163,11 @@ async function fullMicrosoftAuthFlow(entryCode, authMode) {
         if(xblResponse.responseStatus === RestResponseStatus.ERROR) {
             return Promise.reject(microsoftErrorDisplayable(xblResponse.microsoftErrorCode))
         }
-        const xstsResonse = await MicrosoftAuth.getXSTSToken(xblResponse.data)
-        if(xstsResonse.responseStatus === RestResponseStatus.ERROR) {
-            return Promise.reject(microsoftErrorDisplayable(xstsResonse.microsoftErrorCode))
+        const xsts_mc_Response = await MicrosoftAuth.getXSTS_MC_Token(xblResponse.data)
+        if(xsts_mc_Response.responseStatus === RestResponseStatus.ERROR) {
+            return Promise.reject(microsoftErrorDisplayable(xsts_mc_Response.microsoftErrorCode))
         }
-        const mcTokenResponse = await MicrosoftAuth.getMCAccessToken(xstsResonse.data)
+        const mcTokenResponse = await MicrosoftAuth.getMCAccessToken(xsts_mc_Response.data)
         if(mcTokenResponse.responseStatus === RestResponseStatus.ERROR) {
             return Promise.reject(microsoftErrorDisplayable(mcTokenResponse.microsoftErrorCode))
         }
@@ -165,16 +175,25 @@ async function fullMicrosoftAuthFlow(entryCode, authMode) {
         if(mcProfileResponse.responseStatus === RestResponseStatus.ERROR) {
             return Promise.reject(microsoftErrorDisplayable(mcProfileResponse.microsoftErrorCode))
         }
+        const xsts_xbl_Response = await MicrosoftAuth.getXSTS_XBL_Token(xblResponse.data)
+        if(xsts_xbl_Response.responseStatus === RestResponseStatus.ERROR) {
+            return Promise.reject(microsoftErrorDisplayable(xsts_xbl_Response.microsoftErrorCode))
+        }
+        const xuidResponse = await MicrosoftAuth.getXUID(xsts_xbl_Response.data.DisplayClaims.xui[0].uhs, xsts_xbl_Response.data.Token, mcProfileResponse.data.name)
+        if(xuidResponse.responseStatus === RestResponseStatus.ERROR) {
+            return Promise.reject(microsoftErrorDisplayable(xuidResponse.microsoftErrorCode))
+        }
         return {
             accessToken,
             accessTokenRaw,
             xbl: xblResponse.data,
-            xsts: xstsResonse.data,
+            xsts: xsts_mc_Response.data,
             mcToken: mcTokenResponse.data,
-            mcProfile: mcProfileResponse.data
+            mcProfile: mcProfileResponse.data,
+            xuid: xuidResponse.data.people[0].xuid
         }
     } catch(err) {
-        log.error(err)
+        console.log(err)
         return Promise.reject(microsoftErrorDisplayable(MicrosoftErrorCode.UNKNOWN))
     }
 }
@@ -192,6 +211,7 @@ async function addMicrosoftAccount(authCode) {
 
     const ret = addMicrosoftAuthAccount(
         fullAuth.mcProfile.id,
+        fullAuth.xuid,
         fullAuth.mcToken.access_token,
         fullAuth.mcProfile.name,
         calculateExpiryDate(now, fullAuth.mcToken.expires_in),
@@ -310,6 +330,7 @@ function checkForSelectedAccount(){
         else{
             document.getElementById('loginContainer').style.display = "flex";
             //We show the loginContainer, so that user can login using MS;
+            
         }
     }
 }

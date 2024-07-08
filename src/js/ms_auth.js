@@ -100,7 +100,7 @@ const MicrosoftAuth = {
         }
     },
 
-    getXSTSToken: async function (xblResponse) {
+    getXSTS_MC_Token: async function (xblResponse) {
         try {
             const res = await got.post(this.XSTS_AUTH_ENDPOINT, {
                 json: {
@@ -161,6 +161,60 @@ const MicrosoftAuth = {
 
         } catch (error) {
             return MicrosoftAuth.handleGotError('Get MC Profile', error, () => null);
+        }
+    },
+
+    getXSTS_XBL_Token: async function (xblResponse) {
+        try {
+            const res = await got.post(this.XSTS_AUTH_ENDPOINT, {
+                json: {
+                    Properties: {
+                        SandboxId: 'RETAIL',
+                        UserTokens: [xblResponse.Token]
+                    },
+                    RelyingParty: 'http://xboxlive.com',
+                    TokenType: 'JWT'
+                },
+                headers: MicrosoftAuth.STANDARD_HEADERS,
+                responseType: 'json'
+            });
+
+            return {
+                data: res.body,
+                responseStatus: 'SUCCESS'
+            };
+
+        } catch (error) {
+            return MicrosoftAuth.handleGotError('Get XSTS Token', error, () => null);
+        }
+    },
+
+    getXUID: async function(uhs, xstsToken, name){
+
+        const fulltoken = `XBL3.0 x=${uhs};${xstsToken}`
+
+        headers = {
+            "x-xbl-contract-version": "3",
+            "Content-Type": "application/json",
+            "Authorization": fulltoken,
+            "Accept-Language": "en-us"
+        }
+    
+        const url = `https://peoplehub.xboxlive.com/users/me/people/search/decoration/detail,preferredColor?q=${name}&maxItems=25`
+
+        try {
+            const res = await got.get(url, {
+                headers: headers,
+                responseType: 'json'
+            });
+
+            return {
+                data: res.body,
+                responseStatus: 'SUCCESS'
+            };
+
+        } catch (error) {
+            return MicrosoftAuth.handleGotError('Get XUID', error, () => null);
         }
     }
 };
