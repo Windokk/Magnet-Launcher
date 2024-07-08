@@ -39,10 +39,12 @@ A Minecraft Java Launcher in JS built with Electron
 ## Screenshots
 
   <div style="display:grid; gap:10px; grid-template-columns: auto auto">
-    <img src="./github/image.png" width="51%"/>
-    <img src="./github/image2.png" width="48.5%"/>
-    <img src="./github/image-launcher.png" width="47.7%"/>
-    <img src="./github/image-about.png" width="51.7%"/>
+    <img src="./github/screenshot1.png" width="50%"/>
+    <img src="./github/screenshot2.png" width="50%"/>
+    <img src="./github/screenshot3.png" width="50%"/>
+    <img src="./github/screenshot4.png" width="50%"/>
+    <img src="./github/screenshot5.png" width="50%"/>
+    <img src="./github/screenshot6.png" width="50%"/>
   </div>
 </div>
 

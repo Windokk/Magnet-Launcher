@@ -36,10 +36,10 @@ const launcherSettingsDir = path.join(appDirectoryPath, 'launcher-settings');
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    minWidth:940,
-    minHeight:560,
+    width: 1300,
+    height: 920,
+    minWidth:900,
+    minHeight:600,
     frame:false,
     icon:path.join(path.join(appPath, "build"),"icon.ico"),
     webPreferences: {
