@@ -48,7 +48,11 @@ A Minecraft Java Launcher in JS built with Electron
 
 ## Supported Platforms
 
-
+OS | Supported ?
+--- | --- 
+<img src="https://github.com/Windokk/Magnet-Launcher/blob/main/github/microsoft.svg" alt="WindowsIcon" width="20"/> | <p>Windows 10 and 11 are fully suppported</p>
+<img src="https://github.com/Windokk/Magnet-Launcher/blob/main/github/linux.svg" alt="LinuxIcon" width="20"/> | <p>Linux is not YET supported but should be for most distros at release 1.0.0</p>
+<img src="https://github.com/Windokk/Magnet-Launcher/blob/main/github/apple.svg" alt="AppleIcon" width="20"/> | <p>Buy me a Mac first ! 😄</p>
 
 ## User documentation
 
