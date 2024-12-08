@@ -153,7 +153,7 @@ We welcome contributions to this project! To ensure a smooth collaboration, plea
 ### Review Process
 All contributions will be reviewed by project maintainers. Feedback may be provided, and revisions might be requested. We appreciate your patience and cooperation during the review process.
 
-Thank you for contributing to our project!
+Thank you for contributing to my project!
 
 ## Resources Used
 
