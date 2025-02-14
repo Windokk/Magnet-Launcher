@@ -4,7 +4,7 @@
 
 # Welcome to the Magnet Launcher !
 
-<p><i>Losely inspired by the Helios launcher</i></p>
+<p><i>Loosely inspired by the Helios launcher</i></p>
 
 <br>
 
